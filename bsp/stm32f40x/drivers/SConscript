@@ -19,6 +19,16 @@ if GetDepend('RT_USING_LWIP'):
 if GetDepend('RT_USING_PIN'):
     src += ['gpio.c']
 
+if GetDepend('RT_USING_DFS'):
+    src += ['sdcard.c', 'stm324x7_sdio_sd.c']
+
+if GetDepend('RT_USING_CAN'):
+    src += ['bxcan.c']
+
+if GetDepend('RT_USING_RTC'):
+    src += ['stm32f4_rtc.c']
+
+
 CPPPATH = [cwd]
 
 group = DefineGroup('Drivers', src, depend = [''], CPPPATH = CPPPATH)

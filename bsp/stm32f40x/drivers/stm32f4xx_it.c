@@ -102,6 +102,54 @@ void SVC_Handler(void)
 {
 }
 
+
+/**
+  * @brief  This function handles SDIO global interrupt request.
+  * @param  None
+  * @retval None
+  */
+void SDIO_IRQHandler(void)
+{
+	extern void SD_ProcessIRQSrc(void);
+  /* Process All SDIO Interrupt Sources */
+  SD_ProcessIRQSrc();
+}
+
+/**
+  * @brief  This function handles DMA2 Stream3 or DMA2 Stream6 global interrupts
+  *         requests.
+  * @param  None
+  * @retval None
+  */
+void DMA2_Stream3_IRQHandler(void)
+{
+	extern void SD_ProcessDMAIRQ(void);
+	/* Process DMA2 Stream3 or DMA2 Stream6 Interrupt Sources */
+	SD_ProcessDMAIRQ();
+}
+
+void EXTI0_IRQHandler(void)
+{
+  if(EXTI_GetITStatus(EXTI_Line0) != RESET)
+  {
+    /* Clear the EXTI line 0 pending bit */
+    EXTI_ClearITPendingBit(EXTI_Line0);
+  }
+}
+
+void CAN1_RX0_IRQHandler(void){
+	static CanRxMsg RxMessage;
+	CAN_Receive(CAN1, CAN_FIFO0, &RxMessage);
+	rt_kprintf("id[0x%x] data[0x%x]\r\n", RxMessage.StdId, RxMessage.Data[0]);
+}
+
+
+void CAN2_RX0_IRQHandler(void){
+	static CanRxMsg RxMessage;
+	CAN_Receive(CAN2, CAN_FIFO0, &RxMessage);
+	rt_kprintf("id[0x%x] data[0x%x]\r\n", RxMessage.StdId, RxMessage.Data[0]);
+}
+
 /**
   * @}
   */

@@ -166,6 +166,7 @@
 /* RT_GDB_STUB */
 //#define RT_USING_GDB
 
-#define RT_USING_SDIO										
-
+// #define RT_USING_SDIO										
+// #define RT_USING_CAN
+#define RT_USING_RTC
 #endif

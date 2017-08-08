@@ -26,6 +26,19 @@
 #ifdef RT_USING_GDB
 #include <gdb_stub.h>
 #endif
+#include "sdcard.h"
+
+#ifdef RT_USING_DFS
+#include <dfs_fs.h>
+#include <dfs_init.h>
+#include <dfs_elm.h>
+#endif
+
+#ifdef RT_USING_RTC
+#include "stm32f4_rtc.h"
+#endif
+
+#include "common.h"
 
 /*
 *使用idle线程进行喂狗
@@ -64,7 +77,6 @@ void rt_init_thread_entry(void* parameter)
         rt_kprintf("TCP/IP initialized!\n");
     }
 #endif
-		
 		rt_kprintf("RCC_FLAG_BORRST:%d\r\n",RCC_GetFlagStatus(RCC_FLAG_BORRST));
 		rt_kprintf("RCC_FLAG_PINRST:%d\r\n",RCC_GetFlagStatus(RCC_FLAG_PINRST));
 		rt_kprintf("RCC_FLAG_PORRST:%d\r\n",RCC_GetFlagStatus(RCC_FLAG_PORRST));
@@ -79,6 +91,30 @@ void rt_init_thread_entry(void* parameter)
 		IWDG_SetReload(0xFFF);  //写入RLR
 		IWDG_Enable();//KR写入0xCCCC
 		rt_thread_idle_sethook(rt_thread_idle_hook);
+		
+#ifdef RT_USING_RTC
+		rt_hw_rtc_init();
+#endif		
+    /* Filesystem Initialization */
+#if defined(RT_USING_DFS) && defined(RT_USING_DFS_ELMFAT)
+		rt_hw_sdcard_init();
+	/* initialize the device file system */
+		dfs_init();
+	/* initialize the elm chan FatFS file system*/
+		elm_init();
+    /* mount sd card fat partition 1 as root directory */
+    if (dfs_mount("sd0", "/", "elm", 0, 0) == 0)
+    {
+        rt_kprintf("File System initialized!\n");
+    }
+    else
+    {
+        rt_kprintf("File System initialzation failed!\n");
+    }
+#endif /* RT_USING_DFS && RT_USING_DFS_ELMFAT */
+
+		rt_can1_init();
+		rt_can2_init();
 }
 
 int rt_application_init()
