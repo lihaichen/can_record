@@ -1,5 +1,13 @@
 #include "common.h"
 
+global_t global;
+
+
+rt_err_t mempool_init()
+{
+	return rt_mp_init(&global.mempool, "mp1",(void *)0x10000000, 0x10000, MEMPOLL_SIZE);
+}
+
 void can_init(CAN_TypeDef* CANx, unsigned int bps)
 {	
 	CAN_InitTypeDef CAN_InitStructure;

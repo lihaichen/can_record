@@ -56,36 +56,7 @@ static void rt_thread_idle_hook(void)
 
 void rt_init_thread_entry(void* parameter)
 {
-    /* GDB STUB */
-#ifdef RT_USING_GDB
-    gdb_set_device("uart6");
-    gdb_start();
-#endif
-
-    /* LwIP Initialization */
-#ifdef RT_USING_LWIP
-    {
-        extern void lwip_sys_init(void);
-
-        /* register ethernetif device */
-        eth_system_device_init();
-
-        rt_hw_stm32_eth_init();
-
-        /* init lwip system */
-        lwip_sys_init();
-        rt_kprintf("TCP/IP initialized!\n");
-    }
-#endif
-		rt_kprintf("RCC_FLAG_BORRST:%d\r\n",RCC_GetFlagStatus(RCC_FLAG_BORRST));
-		rt_kprintf("RCC_FLAG_PINRST:%d\r\n",RCC_GetFlagStatus(RCC_FLAG_PINRST));
-		rt_kprintf("RCC_FLAG_PORRST:%d\r\n",RCC_GetFlagStatus(RCC_FLAG_PORRST));
-		rt_kprintf("RCC_FLAG_SFTRST:%d\r\n",RCC_GetFlagStatus(RCC_FLAG_SFTRST));
-		rt_kprintf("RCC_FLAG_IWDGRST:%d\r\n",RCC_GetFlagStatus(RCC_FLAG_IWDGRST));
-		rt_kprintf("RCC_FLAG_WWDGRST:%d\r\n",RCC_GetFlagStatus(RCC_FLAG_WWDGRST));
-		rt_kprintf("RCC_FLAG_LPWRRST:%d\r\n",RCC_GetFlagStatus(RCC_FLAG_LPWRRST));
-		RCC_ClearFlag();
-	
+		global.status = INIT;
 	  IWDG_WriteAccessCmd(IWDG_WriteAccess_Enable);//使能写入PR和RLR
 		IWDG_SetPrescaler(IWDG_Prescaler_256);  //写入PR预分频值
 		IWDG_SetReload(0xFFF);  //写入RLR
@@ -112,7 +83,7 @@ void rt_init_thread_entry(void* parameter)
         rt_kprintf("File System initialzation failed!\n");
     }
 #endif /* RT_USING_DFS && RT_USING_DFS_ELMFAT */
-
+		mempool_init();
 		rt_can1_init();
 		rt_can2_init();
 }

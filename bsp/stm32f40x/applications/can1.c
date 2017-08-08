@@ -10,7 +10,7 @@ void rt_can1_thread_entry(void* parameter)
 	can_nvic_config(CAN1,ENABLE);
 	while(1)
 	{
-		can_send_test(CAN1,i);
+		// can_send_test(CAN1,i);
 		i = (i+1)%255;
 		// rt_kprintf("can1 send [%d]\n", i);
 		rt_thread_delay(RT_TICK_PER_SECOND);
