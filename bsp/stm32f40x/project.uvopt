@@ -186,10 +186,10 @@
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <Focus>0</Focus>
-      <ColumnNumber>0</ColumnNumber>
+      <ColumnNumber>16</ColumnNumber>
       <tvExpOptDlg>0</tvExpOptDlg>
-      <TopLine>108</TopLine>
-      <CurrentLine>89</CurrentLine>
+      <TopLine>0</TopLine>
+      <CurrentLine>0</CurrentLine>
       <bDave2>0</bDave2>
       <PathWithFileName>applications\application.c</PathWithFileName>
       <FilenameWithoutPath>application.c</FilenameWithoutPath>
@@ -202,10 +202,10 @@
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <Focus>0</Focus>
-      <ColumnNumber>8</ColumnNumber>
+      <ColumnNumber>21</ColumnNumber>
       <tvExpOptDlg>0</tvExpOptDlg>
-      <TopLine>1</TopLine>
-      <CurrentLine>22</CurrentLine>
+      <TopLine>12</TopLine>
+      <CurrentLine>31</CurrentLine>
       <bDave2>0</bDave2>
       <PathWithFileName>applications\can1.c</PathWithFileName>
       <FilenameWithoutPath>can1.c</FilenameWithoutPath>
@@ -218,10 +218,10 @@
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <Focus>0</Focus>
-      <ColumnNumber>0</ColumnNumber>
+      <ColumnNumber>15</ColumnNumber>
       <tvExpOptDlg>0</tvExpOptDlg>
-      <TopLine>0</TopLine>
-      <CurrentLine>0</CurrentLine>
+      <TopLine>1</TopLine>
+      <CurrentLine>17</CurrentLine>
       <bDave2>0</bDave2>
       <PathWithFileName>applications\can2.c</PathWithFileName>
       <FilenameWithoutPath>can2.c</FilenameWithoutPath>
@@ -234,10 +234,10 @@
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <Focus>0</Focus>
-      <ColumnNumber>10</ColumnNumber>
+      <ColumnNumber>18</ColumnNumber>
       <tvExpOptDlg>0</tvExpOptDlg>
-      <TopLine>34</TopLine>
-      <CurrentLine>48</CurrentLine>
+      <TopLine>92</TopLine>
+      <CurrentLine>113</CurrentLine>
       <bDave2>0</bDave2>
       <PathWithFileName>applications\common.c</PathWithFileName>
       <FilenameWithoutPath>common.c</FilenameWithoutPath>
@@ -252,7 +252,7 @@
       <Focus>0</Focus>
       <ColumnNumber>0</ColumnNumber>
       <tvExpOptDlg>0</tvExpOptDlg>
-      <TopLine>89</TopLine>
+      <TopLine>86</TopLine>
       <CurrentLine>111</CurrentLine>
       <bDave2>0</bDave2>
       <PathWithFileName>applications\startup.c</PathWithFileName>
@@ -290,10 +290,10 @@
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <Focus>0</Focus>
-      <ColumnNumber>0</ColumnNumber>
+      <ColumnNumber>17</ColumnNumber>
       <tvExpOptDlg>0</tvExpOptDlg>
-      <TopLine>125</TopLine>
-      <CurrentLine>142</CurrentLine>
+      <TopLine>127</TopLine>
+      <CurrentLine>147</CurrentLine>
       <bDave2>0</bDave2>
       <PathWithFileName>drivers\stm32f4xx_it.c</PathWithFileName>
       <FilenameWithoutPath>stm32f4xx_it.c</FilenameWithoutPath>
@@ -442,7 +442,7 @@
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <Focus>0</Focus>
-      <ColumnNumber>25</ColumnNumber>
+      <ColumnNumber>0</ColumnNumber>
       <tvExpOptDlg>0</tvExpOptDlg>
       <TopLine>0</TopLine>
       <CurrentLine>0</CurrentLine>
@@ -908,7 +908,7 @@
       <Focus>0</Focus>
       <ColumnNumber>0</ColumnNumber>
       <tvExpOptDlg>0</tvExpOptDlg>
-      <TopLine>174</TopLine>
+      <TopLine>165</TopLine>
       <CurrentLine>175</CurrentLine>
       <bDave2>0</bDave2>
       <PathWithFileName>Libraries\CMSIS\ST\STM32F4xx\Source\Templates\arm\startup_stm32f4xx.s</PathWithFileName>
@@ -978,10 +978,10 @@
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <Focus>0</Focus>
-      <ColumnNumber>0</ColumnNumber>
+      <ColumnNumber>30</ColumnNumber>
       <tvExpOptDlg>0</tvExpOptDlg>
-      <TopLine>0</TopLine>
-      <CurrentLine>0</CurrentLine>
+      <TopLine>2169</TopLine>
+      <CurrentLine>2177</CurrentLine>
       <bDave2>0</bDave2>
       <PathWithFileName>..\..\src\ipc.c</PathWithFileName>
       <FilenameWithoutPath>ipc.c</FilenameWithoutPath>
@@ -1076,8 +1076,8 @@
       <Focus>0</Focus>
       <ColumnNumber>0</ColumnNumber>
       <tvExpOptDlg>0</tvExpOptDlg>
-      <TopLine>0</TopLine>
-      <CurrentLine>0</CurrentLine>
+      <TopLine>252</TopLine>
+      <CurrentLine>258</CurrentLine>
       <bDave2>0</bDave2>
       <PathWithFileName>..\..\src\scheduler.c</PathWithFileName>
       <FilenameWithoutPath>scheduler.c</FilenameWithoutPath>

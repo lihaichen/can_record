@@ -25,7 +25,7 @@
 #include "stm32f4xx.h"
 #include <rtthread.h>
 #include "board.h"
-
+#include "common.h"
 /** @addtogroup STM32F4_Discovery_Peripheral_Examples
   * @{
   */
@@ -138,9 +138,14 @@ void EXTI0_IRQHandler(void)
 }
 
 void CAN1_RX0_IRQHandler(void){
-	static CanRxMsg RxMessage;
-	CAN_Receive(CAN1, CAN_FIFO0, &RxMessage);
-	rt_kprintf("id[0x%x] data[0x%x]\r\n", RxMessage.StdId, RxMessage.Data[0]);
+	static msg_t msg;
+	static CanRxMsg can_msg;
+	rt_memset(&msg,0,sizeof(msg_t));
+	rt_memset(&can_msg,0,sizeof(can_msg));
+	CAN_Receive(CAN1, CAN_FIFO0, &can_msg);
+	msg.type = CAN1_RECV;
+	msg.p = (void *)&can_msg;
+	rt_mq_send(global.can1_mq, &msg, sizeof(msg_t));
 }
 
 

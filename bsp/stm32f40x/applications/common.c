@@ -8,6 +8,16 @@ rt_err_t mempool_init()
 	return rt_mp_init(&global.mempool, "mp1",(void *)0x10000000, 0x10000, MEMPOLL_SIZE);
 }
 
+rt_err_t messagequeue_init()
+{
+	global.can1_mq = rt_mq_create("can1", sizeof(msg_t), MQ_LEN, RT_IPC_FLAG_FIFO);
+	global.can2_mq = rt_mq_create("can2", sizeof(msg_t), MQ_LEN, RT_IPC_FLAG_FIFO);
+	global.sd_mq = rt_mq_create("sd", sizeof(msg_t), MQ_LEN, RT_IPC_FLAG_FIFO);
+	if(global.can1_mq == RT_NULL || global.can1_mq == RT_NULL || global.can1_mq == RT_NULL)
+		return RT_ERROR;
+	return RT_EOK;
+}
+
 void can_init(CAN_TypeDef* CANx, unsigned int bps)
 {	
 	CAN_InitTypeDef CAN_InitStructure;
@@ -31,7 +41,6 @@ void can_init(CAN_TypeDef* CANx, unsigned int bps)
 		NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0x0;
 		NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
 		NVIC_Init(&NVIC_InitStructure);
-		
 	}
 	CAN_ITConfig(CANx, CAN_IT_FMP0, DISABLE);
 	/*
@@ -84,8 +93,9 @@ void can_init(CAN_TypeDef* CANx, unsigned int bps)
 	}
 	CAN_Init(CANx, &CAN_InitStructure);
 	CAN_SlaveStartBank(14);
+	CAN_ITConfig(CANx, CAN_IT_FMP0, ENABLE);	
 }
-void can_filter_init(unsigned int num)
+void can_filter_init(unsigned int num, FunctionalState NewState)
 {
 	CAN_FilterInitTypeDef  CAN_FilterInitStructure;
 	CAN_FilterInitStructure.CAN_FilterNumber = num;	/* 筛选器序号，0-27，共28个筛选器 */
@@ -96,15 +106,8 @@ void can_filter_init(unsigned int num)
 	CAN_FilterInitStructure.CAN_FilterMaskIdHigh = 0x0000;				/* ID掩码值高16bit */
 	CAN_FilterInitStructure.CAN_FilterMaskIdLow = 0x0000;				/* ID掩码值低16bit */
 	CAN_FilterInitStructure.CAN_FilterFIFOAssignment = CAN_FIFO0;		/* 筛选器绑定FIFO 0 */
-	CAN_FilterInitStructure.CAN_FilterActivation = ENABLE;				/* 使能筛选器 */
+	CAN_FilterInitStructure.CAN_FilterActivation = NewState;				/* 使能筛选器 */
 	CAN_FilterInit(&CAN_FilterInitStructure);
-}
-
-
-void can_nvic_config(CAN_TypeDef* CANx,FunctionalState NewState)
-{
-	/* CAN FIFO0 消息接收中断使能 */ 
-	CAN_ITConfig(CANx, CAN_IT_FMP0, NewState);	
 }
 
 void can_send_test(CAN_TypeDef* CANx,char data)

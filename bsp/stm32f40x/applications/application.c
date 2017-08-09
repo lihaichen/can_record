@@ -84,6 +84,7 @@ void rt_init_thread_entry(void* parameter)
     }
 #endif /* RT_USING_DFS && RT_USING_DFS_ELMFAT */
 		mempool_init();
+		messagequeue_init();
 		rt_can1_init();
 		rt_can2_init();
 }
