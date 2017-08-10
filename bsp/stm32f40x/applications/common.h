@@ -27,6 +27,8 @@ typedef enum
 	CAN2_START,
 	CAN1_RECV,
 	CAN2_RECV,
+	CAN1_SAVE,
+	CAN2_SAVE,
 	KEY
 }msg_type_t;
 

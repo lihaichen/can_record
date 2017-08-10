@@ -114,10 +114,12 @@ void can_send_test(CAN_TypeDef* CANx,char data)
 {
 	static CanTxMsg TxMessage;
 	TxMessage.StdId = 0x321;
-	TxMessage.ExtId = 0x01;
+	TxMessage.ExtId = 0x452;
 	TxMessage.RTR = CAN_RTR_DATA;
-	TxMessage.IDE = CAN_ID_STD;
-	TxMessage.DLC = 1;
+	TxMessage.IDE = CAN_ID_EXT;
+	TxMessage.DLC = 3;
 	TxMessage.Data[0] = data;
+	TxMessage.Data[1] = 0x35;
+	TxMessage.Data[2] = 0x56;
 	CAN_Transmit(CANx, &TxMessage);	
 }
