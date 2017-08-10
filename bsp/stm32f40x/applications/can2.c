@@ -6,16 +6,15 @@
 
 void rt_can2_thread_entry(void* parameter)
 {
-	static char i = 0;
+	static int i = 0;
 	rt_kprintf("can1 thread start...\n");
 	can_init(CAN2,1000000);
 	can_filter_init(CAN_FILTER_CHANNEL,ENABLE);
 	while(1)
 	{
 		
-		can_send_test(CAN1,i);
-		i = (i+1)%255;
-		rt_thread_delay(RT_TICK_PER_SECOND);
+		can_send_test(CAN1,i++);
+		rt_thread_delay(RT_TICK_PER_SECOND/2);
 	}
 }
 int rt_can2_init()

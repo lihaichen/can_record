@@ -110,16 +110,34 @@ void can_filter_init(unsigned int num, FunctionalState NewState)
 	CAN_FilterInit(&CAN_FilterInitStructure);
 }
 
-void can_send_test(CAN_TypeDef* CANx,char data)
+//字节流转换为十六进制字符串
+void hex_2_str(const char *src,  char *dest, int len )  
+{  
+    int  i;  
+    char tmp[3];  
+    for( i = 0; i < len; i++ )  
+    {  
+        rt_sprintf( tmp, "%02X ", (unsigned char) src[i] );  
+        rt_memcpy( &dest[i * 3], tmp, 3);  
+    }  
+    return ;  
+}  
+
+void can_send_test(CAN_TypeDef* CANx,unsigned int data)
 {
 	static CanTxMsg TxMessage;
 	TxMessage.StdId = 0x321;
 	TxMessage.ExtId = 0x452;
 	TxMessage.RTR = CAN_RTR_DATA;
 	TxMessage.IDE = CAN_ID_EXT;
-	TxMessage.DLC = 3;
-	TxMessage.Data[0] = data;
-	TxMessage.Data[1] = 0x35;
-	TxMessage.Data[2] = 0x56;
+	TxMessage.DLC = 8;
+	TxMessage.Data[0] = 0x09;
+	TxMessage.Data[1] = 0xAB;
+	TxMessage.Data[2] = 0xCD;
+	TxMessage.Data[3] = 0xEF;
+	TxMessage.Data[4] = (data>>24) & 0xFF;
+	TxMessage.Data[5] = (data>>16) & 0xFF;
+	TxMessage.Data[6] = (data>>8) & 0xFF;
+	TxMessage.Data[7] = data & 0xFF;
 	CAN_Transmit(CANx, &TxMessage);	
 }

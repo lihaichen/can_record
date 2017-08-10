@@ -5,8 +5,9 @@
 #include "stm32f4xx_can.h"
 
 // 内存池的块大小
-#define	MEMPOLL_SIZE		2048
-#define	MQ_LEN					16
+#define	MEMPOLL_SIZE			2048
+#define	CAN_BUF_MAX_SIZE	1800
+#define	MQ_LEN						16
 
 // 运行状态机
 typedef enum 
@@ -40,6 +41,14 @@ typedef struct
 	void * reserve;
 }msg_t;
 
+typedef struct 
+{
+	unsigned int SRF;
+	unsigned int SDF;
+	unsigned int ERF;
+	unsigned int EDF;
+}frame_info_t;
+
 // 全局接口
 typedef struct 
 {
@@ -48,6 +57,7 @@ typedef struct
 	rt_mq_t can1_mq;
 	rt_mq_t can2_mq;
 	rt_mq_t sd_mq;
+	frame_info_t frame_info[2];
 }global_t;
 
 
@@ -60,8 +70,10 @@ extern int rt_can2_init(void);
 extern rt_err_t mempool_init(void);
 // 初始化消息队列
 extern rt_err_t messagequeue_init(void);
+//字节流转换为十六进制字符串
+extern void hex_2_str(const char *src,  char *dest, int len );
 
 extern void can_init(CAN_TypeDef* CANx, unsigned int bps);
 extern void can_filter_init(unsigned int num, FunctionalState NewState);
-extern void can_send_test(CAN_TypeDef* CANx,char data);
+extern void can_send_test(CAN_TypeDef* CANx,unsigned int data);
 #endif

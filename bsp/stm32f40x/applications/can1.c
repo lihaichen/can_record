@@ -5,29 +5,27 @@
 
 #define CAN_FILTER_CHANNEL	0
 
-//字节流转换为十六进制字符串的另一种实现方式  
-void hex_2_str(const char *src,  char *dest, int nSrcLen )  
-{  
-    int  i;  
-    char tmp[3];  
-    for( i = 0; i < nSrcLen; i++ )  
-    {  
-        rt_sprintf( tmp, "%02X ", (unsigned char) src[i] );  
-        rt_memcpy( &dest[i * 3], tmp, 3);  
-    }  
-    return ;  
-}  
+
 
 void rt_can1_thread_entry(void* parameter)
 {
+	// 消息队列
 	static msg_t msg;
+	// can数据指针
 	static CanRxMsg *can_msg;
 	// 存储够SD卡页大小后再发送进行写入
 	static char * buf = RT_NULL;
+	// buf 数据长度
 	static int len = 0;
+	// can 数据hextostr
 	static char tmp[8*3 + 1];
+	// 帧类型
+	static char *frame_type_list[4] = {"SRF","SDF","ERF","EDF"};
+	static char *frame_type = RT_NULL;
+	// 时间
 	time_t timep;  
   struct tm *tm_p; 
+	
 	rt_kprintf("can1 thread start...\n");
 	can_init(CAN1,1000000);
 	can_filter_init(CAN_FILTER_CHANNEL, ENABLE);
@@ -58,14 +56,44 @@ void rt_can1_thread_entry(void* parameter)
 				}
 				time(&timep);  
 				tm_p =localtime(&timep);
-				rt_sprintf(buf + len,"%d-%d-%d %d:%d:%d,%c,%c,0x%X,%s\r\n",
+				
+				if(can_msg->IDE)
+				{
+					// 扩展帧
+					if(can_msg->RTR)
+					{
+						// 远程帧
+						global.frame_info[0].ERF ++;
+						frame_type = frame_type_list[2];
+					}else
+					{
+						// 数据帧
+						global.frame_info[0].EDF ++;
+						frame_type = frame_type_list[3];
+					}
+				}else
+				{
+					// 标准帧
+						// 扩展帧
+					if(can_msg->RTR)
+					{
+						// 远程帧
+						global.frame_info[0].SRF ++;
+						frame_type = frame_type_list[0];
+					}else
+					{
+						// 数据帧
+						global.frame_info[0].SDF ++;
+						frame_type = frame_type_list[1];
+					}
+				}
+				
+				rt_sprintf(buf + len,"%d-%d-%d %d:%d:%d,%s,0x%X,%s\r\n",
 					1900+tm_p->tm_year -2000,1+tm_p->tm_mon, tm_p->tm_mday,
 					tm_p->tm_hour, tm_p->tm_min, tm_p->tm_sec,
-					can_msg->IDE? 'E':'S',can_msg->RTR ? 'R': 'D',
-					can_msg->StdId + can_msg->ExtId,tmp
-				);
+					frame_type,can_msg->StdId + can_msg->ExtId,tmp);
 				len = rt_strlen(buf);
-				if(len > 512*3){
+				if(len > CAN_BUF_MAX_SIZE){
 					rt_kprintf("===>%s\r\n", buf);
 					rt_mp_free(buf);
 					buf = (char *)rt_mp_alloc(&global.mempool,RT_WAITING_FOREVER);
