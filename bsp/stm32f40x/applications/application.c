@@ -87,6 +87,7 @@ void rt_init_thread_entry(void* parameter)
 		messagequeue_init();
 		rt_can1_init();
 		rt_can2_init();
+		rt_file_init();
 }
 
 int rt_application_init()

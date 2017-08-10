@@ -12,7 +12,7 @@ rt_err_t messagequeue_init()
 {
 	global.can1_mq = rt_mq_create("can1", sizeof(msg_t), MQ_LEN, RT_IPC_FLAG_FIFO);
 	global.can2_mq = rt_mq_create("can2", sizeof(msg_t), MQ_LEN, RT_IPC_FLAG_FIFO);
-	global.sd_mq = rt_mq_create("sd", sizeof(msg_t), MQ_LEN, RT_IPC_FLAG_FIFO);
+	global.save_mq = rt_mq_create("save", sizeof(msg_t), MQ_LEN, RT_IPC_FLAG_FIFO);
 	if(global.can1_mq == RT_NULL || global.can1_mq == RT_NULL || global.can1_mq == RT_NULL)
 		return RT_ERROR;
 	return RT_EOK;
@@ -141,3 +141,18 @@ void can_send_test(CAN_TypeDef* CANx,unsigned int data)
 	TxMessage.Data[7] = data & 0xFF;
 	CAN_Transmit(CANx, &TxMessage);	
 }
+
+#ifdef RT_USING_FINSH
+#include "finsh.h"
+void show_frame(void)
+{
+	int i = 0;
+	for(i = 0; i < 2; i++)
+	{
+		rt_kprintf("can[%d] ==> SRF[%d] SDF[%d] ERF[%d] EDF[%d]\r\n",
+			i+1, global.frame_info[i].SRF,global.frame_info[i].SDF,
+		global.frame_info[i].ERF,global.frame_info[i].EDF);
+	}
+}
+FINSH_FUNCTION_EXPORT(show_frame, show can frame info.)
+#endif

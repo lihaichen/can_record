@@ -431,9 +431,9 @@
           </Files>
           <Files>
             <File>
-              <FileName>file.c</FileName>
+              <FileName>save.c</FileName>
               <FileType>1</FileType>
-              <FilePath>applications\file.c</FilePath>
+              <FilePath>applications\save.c</FilePath>
             </File>
           </Files>
           <Files>
@@ -897,6 +897,13 @@
               <FileName>ff.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\components\dfs\filesystems\elmfat\ff.c</FilePath>
+            </File>
+          </Files>
+          <Files>
+            <File>
+              <FileName>ccsbcs.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\components\dfs\filesystems\elmfat\option\ccsbcs.c</FilePath>
             </File>
           </Files>
         </Group>

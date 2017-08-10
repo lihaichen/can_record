@@ -138,15 +138,15 @@ void EXTI0_IRQHandler(void)
 }
 
 void CAN1_RX0_IRQHandler(void){
-	static msg_t msg[MQ_LEN];
+	msg_t msg;
 	static CanRxMsg can_msg[MQ_LEN];
 	static int i = 0;
-	rt_memset(&msg[i],0,sizeof(msg_t));
+	rt_memset(&msg,0,sizeof(msg_t));
 	rt_memset(&can_msg[i],0,sizeof(CanRxMsg));
 	CAN_Receive(CAN1, CAN_FIFO0, &can_msg[i]);
-	msg[i].type = CAN1_RECV;
-	msg[i].p = (void *)&can_msg[i];
-	rt_mq_send(global.can1_mq, &msg[i], sizeof(msg_t));
+	msg.type = CAN1_RECV;
+	msg.p = (void *)&can_msg[i];
+	rt_mq_send(global.can1_mq, &msg, sizeof(msg_t));
 	i = (i+1)%MQ_LEN;
 }
 

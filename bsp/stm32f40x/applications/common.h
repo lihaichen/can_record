@@ -56,7 +56,7 @@ typedef struct
 	struct rt_mempool mempool;
 	rt_mq_t can1_mq;
 	rt_mq_t can2_mq;
-	rt_mq_t sd_mq;
+	rt_mq_t save_mq;
 	frame_info_t frame_info[2];
 }global_t;
 
@@ -75,5 +75,7 @@ extern void hex_2_str(const char *src,  char *dest, int len );
 
 extern void can_init(CAN_TypeDef* CANx, unsigned int bps);
 extern void can_filter_init(unsigned int num, FunctionalState NewState);
+// 存储线程初始化
+extern int rt_file_init(void);
 extern void can_send_test(CAN_TypeDef* CANx,unsigned int data);
 #endif

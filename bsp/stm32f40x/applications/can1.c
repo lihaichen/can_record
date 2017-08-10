@@ -94,8 +94,14 @@ void rt_can1_thread_entry(void* parameter)
 					frame_type,can_msg->StdId + can_msg->ExtId,tmp);
 				len = rt_strlen(buf);
 				if(len > CAN_BUF_MAX_SIZE){
-					rt_kprintf("===>%s\r\n", buf);
-					rt_mp_free(buf);
+					// rt_kprintf("===>%s\r\n", buf);
+					// 进行存储
+					msg_t send_msg;
+					rt_memset(&send_msg,0,sizeof(msg_t));
+					send_msg.type = CAN1_SAVE;
+					send_msg.value = len;
+					send_msg.p = buf;
+					rt_mq_send(global.save_mq, &send_msg, sizeof(msg_t));
 					buf = (char *)rt_mp_alloc(&global.mempool,RT_WAITING_FOREVER);
 					rt_memset(buf,0,MEMPOLL_SIZE);
 				}
