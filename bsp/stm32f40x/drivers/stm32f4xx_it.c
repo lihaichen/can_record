@@ -24,6 +24,7 @@
 /* Includes ------------------------------------------------------------------*/
 #include "stm32f4xx.h"
 #include <rtthread.h>
+
 #include "board.h"
 #include "common.h"
 /** @addtogroup STM32F4_Discovery_Peripheral_Examples

@@ -3,10 +3,8 @@
 #include <time.h> 
 #include <stdio.h>
 #include "common.h"
-
+#include <drivers/pin.h>
 #define CAN_FILTER_CHANNEL	0
-
-
 
 void rt_can1_thread_entry(void* parameter)
 {
@@ -36,12 +34,24 @@ void rt_can1_thread_entry(void* parameter)
 	rt_memset(buf,0,MEMPOLL_SIZE);
 	while(1)
 	{		
-		if(rt_mq_recv (global.can1_mq, &msg,sizeof(msg_t),  RT_WAITING_FOREVER) != RT_EOK)
+		if(rt_mq_recv (global.can1_mq, &msg,sizeof(msg_t),  RT_TICK_PER_SECOND/2) != RT_EOK)
 		{
-			rt_kprintf("can1 ==> recv mq error\n");
-			rt_thread_delay(RT_TICK_PER_SECOND * 10/1000);
+			msg_t send_msg;
+			rt_memset(&send_msg,0,sizeof(msg_t));
+			send_msg.type = CAN1_SAVE;
+			send_msg.value = len;
+			send_msg.p = buf;
+			send_msg.reserve = save_sum;
+			rt_mq_send(global.save_mq, &send_msg, sizeof(msg_t));
+			buf = (char *)rt_mp_alloc(&global.mempool,RT_WAITING_FOREVER);
+			rt_memset(buf,0,MEMPOLL_SIZE);
+			rt_kprintf("can1==>%d-%d-%d\n",save_frame_sum,len,save_sum);
+			len = 0;
+			save_frame_sum = 0;
+			save_sum ++;
 			continue;
 		}
+		rt_pin_write(2,0);
 		switch(msg.type)
 		{
 			case CAN1_STOP:
@@ -110,6 +120,7 @@ void rt_can1_thread_entry(void* parameter)
 					save_frame_sum = 0;
 					save_sum ++;
 				}
+				rt_pin_write(2,1);
 				break;
 			default:
 				break;

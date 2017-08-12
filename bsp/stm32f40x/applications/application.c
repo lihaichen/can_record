@@ -37,7 +37,7 @@
 #ifdef RT_USING_RTC
 #include "stm32f4_rtc.h"
 #endif
-
+#include <drivers/pin.h>
 #include "common.h"
 
 /*
@@ -46,17 +46,46 @@
 */
 static void rt_thread_idle_hook(void)
 {
-	static rt_tick_t time = 0;
-	if((rt_tick_get() - time) > 2*RT_TICK_PER_SECOND)
+	static rt_tick_t time; 
+	// 看门狗
+	static rt_tick_t watchdog_time = 0;
+	// 
+	time = rt_tick_get();
+	if((time - watchdog_time) > RT_TICK_PER_SECOND)
 	{
 		IWDG_ReloadCounter();
-		time = rt_tick_get();
+		watchdog_time = rt_tick_get();
+	}
+	// 状态led
+	switch(global.status)
+	{
+		case RUN:
+		{
+			unsigned int time_s = (time%RT_TICK_PER_SECOND);
+			if(time_s < RT_TICK_PER_SECOND/2){
+				rt_pin_write(1,0);
+			}else
+			{
+				rt_pin_write(1,1);
+			}
+		}
+			break;
+		default:
+			rt_pin_write(1,0);
+			break;
 	}
 }
 
 void rt_init_thread_entry(void* parameter)
 {
 		global.status = INIT;
+		// 初始化状态LED
+		rt_pin_mode(0,0);
+		rt_pin_mode(1,0);
+		rt_pin_mode(2,0);
+		rt_pin_write(0,1);
+		rt_pin_write(1,1);
+		rt_pin_write(2,1);
 	  IWDG_WriteAccessCmd(IWDG_WriteAccess_Enable);//使能写入PR和RLR
 		IWDG_SetPrescaler(IWDG_Prescaler_256);  //写入PR预分频值
 		IWDG_SetReload(0xFFF);  //写入RLR
@@ -76,18 +105,22 @@ void rt_init_thread_entry(void* parameter)
     /* mount sd card fat partition 1 as root directory */
     if (dfs_mount("sd0", "/", "elm", 0, 0) == 0)
     {
-        rt_kprintf("File System initialized!\n");
+        
+			rt_kprintf("File System initialized!\n");
+			mempool_init();
+			messagequeue_init();
+			rt_can1_init();
+			rt_can2_init();
+			rt_file_init();
+			global.status = RUN;
     }
     else
     {
-        rt_kprintf("File System initialzation failed!\n");
+      rt_kprintf("File System initialzation failed!\n");
+			global.status = SD_ERROR;
     }
 #endif /* RT_USING_DFS && RT_USING_DFS_ELMFAT */
-		mempool_init();
-		messagequeue_init();
-		rt_can1_init();
-		rt_can2_init();
-		rt_file_init();
+		
 }
 
 int rt_application_init()

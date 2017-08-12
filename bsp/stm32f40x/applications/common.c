@@ -23,6 +23,34 @@ void can_init(CAN_TypeDef* CANx, unsigned int bps)
 	CAN_InitTypeDef CAN_InitStructure;
 	NVIC_InitTypeDef  NVIC_InitStructure;
 	
+	// gpio
+	GPIO_InitTypeDef  GPIO_InitStructure;
+
+	RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOB|RCC_AHB1Periph_GPIOD, ENABLE);
+
+	GPIO_PinAFConfig(GPIOD, GPIO_PinSource0, GPIO_AF_CAN1);
+	GPIO_PinAFConfig(GPIOD, GPIO_PinSource1, GPIO_AF_CAN1);
+
+	GPIO_PinAFConfig(GPIOB, GPIO_PinSource5, GPIO_AF_CAN2);
+	GPIO_PinAFConfig(GPIOB, GPIO_PinSource6, GPIO_AF_CAN2);
+	
+	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_0;
+	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF;
+	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+	GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
+	GPIO_InitStructure.GPIO_PuPd  = GPIO_PuPd_UP;
+	GPIO_Init(GPIOD, &GPIO_InitStructure);
+
+	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_1;
+	GPIO_Init(GPIOD, &GPIO_InitStructure);
+	
+	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_5;
+	GPIO_Init(GPIOB, &GPIO_InitStructure);
+	
+	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_6;
+	GPIO_Init(GPIOB, &GPIO_InitStructure);
+
+
 	if(CANx == CAN1)
 	{
 		RCC_APB1PeriphClockCmd(RCC_APB1Periph_CAN1, ENABLE);
@@ -57,7 +85,7 @@ void can_init(CAN_TypeDef* CANx, unsigned int bps)
 	CAN_InitStructure.CAN_NART = DISABLE;			/* 禁止仲裁丢失或出错后的自动重传功能 */
 	CAN_InitStructure.CAN_RFLM = DISABLE;			/* 禁止接收FIFO加锁模式 */
 	CAN_InitStructure.CAN_TXFP = DISABLE;			/* 禁止传输FIFO优先级 */
-	CAN_InitStructure.CAN_Mode = CAN_Mode_LoopBack;;	/* 设置CAN为回环模式 */
+	CAN_InitStructure.CAN_Mode = CAN_Mode_Normal;	/* 设置CAN为回环模式 */
 	
 	/* 
 		CAN 波特率 = RCC_APB1Periph_CAN1 / Prescaler / (SJW + BS1 + BS2);

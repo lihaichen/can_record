@@ -26,6 +26,7 @@ static int save(const char *file_name,const void *buf, size_t count)
 		rt_kprintf("save ==> open file[%s] error\n", file_name);
 		return -1;
 	}
+	rt_pin_write(0,0);
 	if(write(fd, buf,count) != count){
 		rt_kprintf("save ==> write file[%s] error\n", file_name);
 		close(fd);
@@ -66,7 +67,6 @@ void rt_file_thread_entry(void* parameter)
 		switch(msg.type)
 		{
 			case CAN1_SAVE:
-				rt_pin_write(0,0);
 				rt_memset(buf,0,MEMPOLL_SIZE);
 				rt_memcpy(buf,msg.p,msg.value);
 				rt_mp_free(msg.p);
