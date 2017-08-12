@@ -36,19 +36,22 @@ void rt_can1_thread_entry(void* parameter)
 	{		
 		if(rt_mq_recv (global.can1_mq, &msg,sizeof(msg_t),  RT_TICK_PER_SECOND/2) != RT_EOK)
 		{
-			msg_t send_msg;
-			rt_memset(&send_msg,0,sizeof(msg_t));
-			send_msg.type = CAN1_SAVE;
-			send_msg.value = len;
-			send_msg.p = buf;
-			send_msg.reserve = save_sum;
-			rt_mq_send(global.save_mq, &send_msg, sizeof(msg_t));
-			buf = (char *)rt_mp_alloc(&global.mempool,RT_WAITING_FOREVER);
-			rt_memset(buf,0,MEMPOLL_SIZE);
-			rt_kprintf("can1==>%d-%d-%d\n",save_frame_sum,len,save_sum);
-			len = 0;
-			save_frame_sum = 0;
-			save_sum ++;
+			if(len > 0)
+			{
+				msg_t send_msg;
+				rt_memset(&send_msg,0,sizeof(msg_t));
+				send_msg.type = CAN1_SAVE;
+				send_msg.value = len;
+				send_msg.p = buf;
+				send_msg.reserve = save_sum;
+				rt_mq_send(global.save_mq, &send_msg, sizeof(msg_t));
+				buf = (char *)rt_mp_alloc(&global.mempool,RT_WAITING_FOREVER);
+				rt_memset(buf,0,MEMPOLL_SIZE);
+				rt_kprintf("can1==>%d-%d-%d\n",save_frame_sum,len,save_sum);
+				len = 0;
+				save_frame_sum = 0;
+				save_sum ++;
+			}
 			continue;
 		}
 		rt_pin_write(2,0);
