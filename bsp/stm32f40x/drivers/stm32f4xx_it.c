@@ -139,7 +139,7 @@ void EXTI0_IRQHandler(void)
 
 void CAN1_RX0_IRQHandler(void){
 	msg_t msg;
-	static CanRxMsg can_msg[MQ_LEN];
+	static CanRxMsg can_msg[MQ_LEN * 4];
 	static int i = 0;
 	rt_memset(&msg,0,sizeof(msg_t));
 	rt_memset(&can_msg[i],0,sizeof(CanRxMsg));
@@ -147,7 +147,7 @@ void CAN1_RX0_IRQHandler(void){
 	msg.type = CAN1_RECV;
 	msg.p = (void *)&can_msg[i];
 	rt_mq_send(global.can1_mq, &msg, sizeof(msg_t));
-	i = (i+1)%MQ_LEN;
+	i = (i+1)%(MQ_LEN*4);
 }
 
 

@@ -7,7 +7,7 @@
 // 内存池的块大小
 #define	MEMPOLL_SIZE			2048
 #define	CAN_BUF_MAX_SIZE	1800
-#define	MQ_LEN						16
+#define	MQ_LEN						32
 
 // 运行状态机
 typedef enum 
@@ -38,7 +38,7 @@ typedef struct
 	msg_type_t type;
 	unsigned int value;
 	void *p;
-	void * reserve;
+	unsigned int reserve;
 }msg_t;
 
 typedef struct 

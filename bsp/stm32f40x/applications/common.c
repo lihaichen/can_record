@@ -1,5 +1,5 @@
 #include "common.h"
-
+#include <stdio.h>
 global_t global;
 
 
@@ -117,8 +117,8 @@ void hex_2_str(const char *src,  char *dest, int len )
     char tmp[3];  
     for( i = 0; i < len; i++ )  
     {  
-        rt_sprintf( tmp, "%02X ", (unsigned char) src[i] );  
-        rt_memcpy( &dest[i * 3], tmp, 3);  
+        sprintf(tmp, "%02X ", (unsigned char) src[i] );  
+        rt_memcpy(&dest[i * 3], tmp, 3);  
     }  
     return ;  
 }  

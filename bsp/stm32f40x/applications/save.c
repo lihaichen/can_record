@@ -32,7 +32,7 @@ void rt_file_thread_entry(void* parameter)
 			rt_thread_delay(RT_TICK_PER_SECOND * 10/1000);
 			continue;
 		}
-		rt_kprintf("save ==> recv msg[%d]\n",msg.type);
+		rt_kprintf("save ==> recv msg[%d] value[%d] index[%d]\n",msg.type,msg.value,msg.reserve);
 		switch(msg.type)
 		{
 			case CAN1_SAVE:
