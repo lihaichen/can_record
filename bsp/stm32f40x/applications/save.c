@@ -1,8 +1,9 @@
 #include <board.h>
 #include <rtthread.h>
-#include "common.h"
 #include <dfs_posix.h>
 #include <time.h> 
+#include "common.h"
+#include <drivers/pin.h>
 
 static long get_file_size(const char *path)  
 {  
@@ -52,6 +53,7 @@ void rt_file_thread_entry(void* parameter)
 	rt_memset(file_name,0,sizeof(file_name));
 	new_file(file_name[0],"/CH1");
 	new_file(file_name[1],"/CH2");
+	rt_pin_mode(0,0);
 	while(1)
 	{
 		if(rt_mq_recv (global.save_mq, &msg,sizeof(msg_t),  RT_WAITING_FOREVER) != RT_EOK)
@@ -60,10 +62,11 @@ void rt_file_thread_entry(void* parameter)
 			rt_thread_delay(RT_TICK_PER_SECOND * 10/1000);
 			continue;
 		}
-		rt_kprintf("save ==> recv msg[%d] value[%d] index[%d]\n",msg.type,msg.value,msg.reserve);
+		rt_kprintf("save ==>%d-%d-%d\n",msg.type,msg.value,msg.reserve);
 		switch(msg.type)
 		{
 			case CAN1_SAVE:
+				rt_pin_write(0,0);
 				rt_memset(buf,0,MEMPOLL_SIZE);
 				rt_memcpy(buf,msg.p,msg.value);
 				rt_mp_free(msg.p);
@@ -72,6 +75,7 @@ void rt_file_thread_entry(void* parameter)
 				{
 					new_file(file_name[0],"/CH1");
 				}
+				rt_pin_write(0,1);
 				break;
 			case CAN2_SAVE:
 				break;

@@ -6,7 +6,7 @@
 
 // 内存池的块大小
 #define	MEMPOLL_SIZE			4096
-#define	CAN_BUF_MAX_SIZE	4000
+#define	CAN_BUF_MAX_SIZE	512*7
 #define	MQ_LEN						32
 #define	FILE_MAX_SIZE			200*1024*1024
 // 运行状态机

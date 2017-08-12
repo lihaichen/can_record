@@ -18,6 +18,8 @@ void rt_can1_thread_entry(void* parameter)
 	static char * buf = RT_NULL;
 	// buf 数据长度
 	static int len = 0;
+	// sprintf 长度
+	static int sprintf_len = 0;
 	// can 数据hextostr
 	static char tmp[8*3 + 1];
 	// 帧类型
@@ -30,7 +32,7 @@ void rt_can1_thread_entry(void* parameter)
 	// 时间
 	time_t timep;  
   struct tm *tm_p; 
-	
+
 	rt_kprintf("can1 thread start...\n");
 	can_init(CAN1,1000000);
 	can_filter_init(CAN_FILTER_CHANNEL, ENABLE);
@@ -90,13 +92,18 @@ void rt_can1_thread_entry(void* parameter)
 				}
 				time(&timep);
 				tm_p =localtime(&timep);
-				sprintf(&buf[len],"%04d-%02d-%02d %02d:%02d:%02d,%s,0x%X,%s\n",
+				sprintf_len = sprintf(&buf[len],"%04d-%02d-%02d %02d:%02d:%02d,%s,0x%X,%s\n",
 					tm_p->tm_year + 1900,(1+tm_p->tm_mon), tm_p->tm_mday,
 					tm_p->tm_hour, tm_p->tm_min, tm_p->tm_sec,
 					frame_type,can_msg->StdId + can_msg->ExtId,tmp);
-				len = rt_strlen(buf);
+				if(sprintf_len != 55)
+				{
+					rt_kprintf("len[%d],buf[%s]\n",sprintf_len,buf+len);
+				}
+				len += 64;
+				// len = rt_strlen(buf);
 				save_frame_sum ++;
-				if(len > CAN_BUF_MAX_SIZE){
+				if(len >= CAN_BUF_MAX_SIZE){
 					// 进行存储
 					msg_t send_msg;
 					rt_memset(&send_msg,0,sizeof(msg_t));
@@ -107,7 +114,7 @@ void rt_can1_thread_entry(void* parameter)
 					rt_mq_send(global.save_mq, &send_msg, sizeof(msg_t));
 					buf = (char *)rt_mp_alloc(&global.mempool,RT_WAITING_FOREVER);
 					rt_memset(buf,0,MEMPOLL_SIZE);
-					rt_kprintf("==>%d-%d-%d\n",save_frame_sum,len,save_sum);
+					rt_kprintf("can1==>%d-%d-%d\n",save_frame_sum,len,save_sum);
 					len = 0;
 					save_frame_sum = 0;
 					save_sum ++;

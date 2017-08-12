@@ -382,8 +382,7 @@ static rt_size_t rt_sdcard_write (rt_device_t dev, rt_off_t pos, const void* buf
 							break;
 					else
 						rt_thread_delay(2);
-			 }
-			 
+				}
    }
    else
    {
@@ -403,7 +402,6 @@ static rt_size_t rt_sdcard_write (rt_device_t dev, rt_off_t pos, const void* buf
 					else
 						rt_thread_delay(2);
 			 }
-			 
 		}
 		
 		if(Tr_status == SD_TRANSFER_OK)

@@ -48,9 +48,9 @@
 // #define SD_DETECT_GPIO_PORT              GPIOH                       /* GPIOH */
 // #define SD_DETECT_GPIO_CLK               RCC_AHB1Periph_GPIOH
 
-#define SD_DETECT_PIN                    GPIO_Pin_2                 /* Pe.2 */
-#define SD_DETECT_GPIO_PORT              GPIOE                       /* GPIOe */
-#define SD_DETECT_GPIO_CLK               RCC_AHB1Periph_GPIOE
+#define SD_DETECT_PIN                    GPIO_Pin_3                 /* Pe.2 */
+#define SD_DETECT_GPIO_PORT              GPIOD                       /* GPIOe */
+#define SD_DETECT_GPIO_CLK               RCC_AHB1Periph_GPIOD
 
 #define SDIO_FIFO_ADDRESS                ((uint32_t)0x40012C80)
 /** 
