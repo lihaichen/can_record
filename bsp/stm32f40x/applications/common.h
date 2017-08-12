@@ -9,6 +9,10 @@
 #define	CAN_BUF_MAX_SIZE	512*7
 #define	MQ_LEN						32
 #define	FILE_MAX_SIZE			200*1024*1024
+
+// 不够64字节，补0,为扇区的整数倍
+#define FRAME_SIZE				64
+
 // 运行状态机
 typedef enum 
 {
@@ -62,7 +66,8 @@ typedef struct
 
 
 extern global_t global;
-
+// 帧类型
+extern char *frame_type_list[4];
 
 extern int rt_can1_init(void);
 extern int rt_can2_init(void);

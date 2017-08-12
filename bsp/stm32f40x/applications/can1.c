@@ -18,12 +18,8 @@ void rt_can1_thread_entry(void* parameter)
 	static char * buf = RT_NULL;
 	// buf 数据长度
 	static int len = 0;
-	// sprintf 长度
-	static int sprintf_len = 0;
 	// can 数据hextostr
-	static char tmp[8*3 + 1];
-	// 帧类型
-	static char *frame_type_list[4] = {"SRF","SDF","ERF","EDF"};
+	static char tmp[64];
 	static char *frame_type = RT_NULL;
 	// 每次存储帧数量
 	static int save_frame_sum = 0;
@@ -92,16 +88,11 @@ void rt_can1_thread_entry(void* parameter)
 				}
 				time(&timep);
 				tm_p =localtime(&timep);
-				sprintf_len = sprintf(&buf[len],"%04d-%02d-%02d %02d:%02d:%02d,%s,0x%X,%s\n",
+				sprintf(&buf[len],"%04d-%02d-%02d %02d:%02d:%02d,%s,0x%X,%s\n",
 					tm_p->tm_year + 1900,(1+tm_p->tm_mon), tm_p->tm_mday,
 					tm_p->tm_hour, tm_p->tm_min, tm_p->tm_sec,
 					frame_type,can_msg->StdId + can_msg->ExtId,tmp);
-				if(sprintf_len != 55)
-				{
-					rt_kprintf("len[%d],buf[%s]\n",sprintf_len,buf+len);
-				}
-				len += 64;
-				// len = rt_strlen(buf);
+				len += FRAME_SIZE;
 				save_frame_sum ++;
 				if(len >= CAN_BUF_MAX_SIZE){
 					// 进行存储

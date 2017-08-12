@@ -12,7 +12,6 @@ void rt_can2_thread_entry(void* parameter)
 	can_filter_init(CAN_FILTER_CHANNEL,ENABLE);
 	while(1)
 	{
-		
 		can_send_test(CAN1,i++);
 		rt_thread_delay(RT_TICK_PER_SECOND/100);
 	}

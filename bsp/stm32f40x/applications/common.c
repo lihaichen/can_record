@@ -1,8 +1,8 @@
 #include "common.h"
 #include <stdio.h>
 global_t global;
-
-
+// 帧类型
+char *frame_type_list[4] = {"SRF","SDF","ERF","EDF"};
 rt_err_t mempool_init()
 {
 	return rt_mp_init(&global.mempool, "mp1",(void *)0x10000000, 0x10000, MEMPOLL_SIZE);
