@@ -107,7 +107,7 @@ void rt_can1_thread_entry(void* parameter)
 					rt_mq_send(global.save_mq, &send_msg, sizeof(msg_t));
 					buf = (char *)rt_mp_alloc(&global.mempool,RT_WAITING_FOREVER);
 					rt_memset(buf,0,MEMPOLL_SIZE);
-					rt_kprintf("==>%d-%d\n",save_frame_sum,len);
+					rt_kprintf("==>%d-%d-%d\n",save_frame_sum,len,save_sum);
 					len = 0;
 					save_frame_sum = 0;
 					save_sum ++;

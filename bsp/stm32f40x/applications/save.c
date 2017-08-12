@@ -2,6 +2,19 @@
 #include <rtthread.h>
 #include "common.h"
 #include <dfs_posix.h>
+#include <time.h> 
+
+static long get_file_size(const char *path)  
+{  
+    long filesize = -1;      
+    struct stat stat_buf;  
+    if(stat(path, &stat_buf) < 0){  
+        return filesize;  
+    }else{  
+        filesize = stat_buf.st_size;  
+    }  
+    return filesize;  
+}  
 
 static int save(const char *file_name,const void *buf, size_t count)
 {
@@ -19,11 +32,26 @@ static int save(const char *file_name,const void *buf, size_t count)
 	return close(fd);
 }
 
+static void new_file(char *buf,const char *pre)
+{
+	time_t timep;  
+  struct tm *tm_p; 
+	time(&timep);
+	tm_p =localtime(&timep);
+	sprintf(buf,"%s_%04d%02d%02d-%02d%02d%02d.csv",pre,
+					tm_p->tm_year + 1900,(1+tm_p->tm_mon), tm_p->tm_mday,
+					tm_p->tm_hour, tm_p->tm_min, tm_p->tm_sec);
+}
+
 void rt_file_thread_entry(void* parameter)
 {	
 	// 消息队列
 	static msg_t msg;
 	static char buf[MEMPOLL_SIZE];
+	static char file_name[2][32];
+	rt_memset(file_name,0,sizeof(file_name));
+	new_file(file_name[0],"/CH1");
+	new_file(file_name[1],"/CH2");
 	while(1)
 	{
 		if(rt_mq_recv (global.save_mq, &msg,sizeof(msg_t),  RT_WAITING_FOREVER) != RT_EOK)
@@ -39,14 +67,17 @@ void rt_file_thread_entry(void* parameter)
 				rt_memset(buf,0,MEMPOLL_SIZE);
 				rt_memcpy(buf,msg.p,msg.value);
 				rt_mp_free(msg.p);
-				save("/test.csv",buf,msg.value);
+				save(file_name[0],buf,msg.value);
+				if(get_file_size(file_name[0]) >= FILE_MAX_SIZE)
+				{
+					new_file(file_name[0],"/CH1");
+				}
 				break;
 			case CAN2_SAVE:
 				break;
 			default:
 				break;
 		}
-		rt_thread_delay(RT_TICK_PER_SECOND);
 	}
 }
 int rt_file_init()
