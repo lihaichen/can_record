@@ -5,7 +5,8 @@ global_t global;
 
 rt_err_t mempool_init()
 {
-	return rt_mp_init(&global.mempool, "mp1",(void *)0x10000000, 0x10000, MEMPOLL_SIZE);
+	global.mempool2 = rt_mp_create("mp2", MEMPOLL_COUNT, MEMPOLL_SIZE);
+	return rt_mp_init(&global.mempool1, "mp1",(void *)0x10000000, 0x10000, MEMPOLL_SIZE);
 }
 
 rt_err_t messagequeue_init()
@@ -182,9 +183,19 @@ char * send_save_msg(msg_type_t type,void *buf,int len,int save_index)
 	send_msg.p = buf;
 	send_msg.reserve = save_index;
 	rt_mq_send(global.save_mq, &send_msg, sizeof(msg_t));
-	result = (char *)rt_mp_alloc(&global.mempool,RT_WAITING_FOREVER);
+	switch(type)
+	{
+		case CAN1_SAVE:
+			result = (char *)rt_mp_alloc(&global.mempool1,RT_WAITING_FOREVER);
+			break;
+		case CAN2_SAVE:
+			result = (char *)rt_mp_alloc(global.mempool2,RT_WAITING_FOREVER);
+			break;
+		default:
+			break;
+	}
 	rt_memset(result,0,MEMPOLL_SIZE);
-	rt_kprintf("can1==>%d-%d\n",len,save_index);
+	// rt_kprintf("c>%d-%d-%d\n",type,len,save_index);
 	return result;
 }
 // 将can数据解析存储buf，格式为csv

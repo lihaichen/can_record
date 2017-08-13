@@ -5,10 +5,11 @@
 #include "stm32f4xx_can.h"
 
 // 内存池的块大小
-#define	MEMPOLL_SIZE			4096
-#define	CAN_BUF_MAX_SIZE	512*7
+#define	MEMPOLL_SIZE			(512*31 + FRAME_SIZE * 3)
+#define MEMPOLL_COUNT			5
+#define	CAN_BUF_MAX_SIZE	512*31
 #define	MQ_LEN						32
-#define	FILE_MAX_SIZE			200*1024*1024
+#define	FILE_MAX_SIZE			100*1024*1024
 
 #define	CAN_DEFAULT_BPS		1000000
 
@@ -59,7 +60,8 @@ typedef struct
 typedef struct 
 {
 	status_type_t status;
-	struct rt_mempool mempool;
+	struct rt_mempool mempool1;
+	struct rt_mempool *mempool2;
 	rt_mq_t can1_mq;
 	rt_mq_t can2_mq;
 	rt_mq_t save_mq;

@@ -161,7 +161,7 @@ void CAN2_RX0_IRQHandler(void){
 	CAN_Receive(CAN2, CAN_FIFO0, &can_msg[i]);
 	msg.type = CAN2_RECV;
 	msg.p = (void *)&can_msg[i];
-	rt_mq_send(global.can1_mq, &msg, sizeof(msg_t));
+	rt_mq_send(global.can2_mq, &msg, sizeof(msg_t));
 	i = (i+1)%(MQ_LEN);
 }
 

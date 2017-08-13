@@ -1,9 +1,8 @@
 #include <board.h>
 #include <rtthread.h>
-#include <time.h> 
-#include <stdio.h>
 #include "common.h"
 #include <drivers/pin.h>
+
 #define CAN_FILTER_CHANNEL	0
 
 void rt_can1_thread_entry(void* parameter)
@@ -22,7 +21,7 @@ void rt_can1_thread_entry(void* parameter)
 	rt_kprintf("can1 thread start...\n");
 	can_init(CAN1,CAN_DEFAULT_BPS);
 	can_filter_init(CAN_FILTER_CHANNEL, ENABLE);
-	buf = (char *)rt_mp_alloc(&global.mempool,RT_WAITING_FOREVER);
+	buf = (char *)rt_mp_alloc(&global.mempool1,RT_WAITING_FOREVER);
 	rt_memset(buf,0,MEMPOLL_SIZE);
 	while(1)
 	{		
@@ -61,9 +60,9 @@ void rt_can1_thread_entry(void* parameter)
 			default:
 				break;
 		}
-		
 	}
 }
+
 int rt_can1_init()
 {
 	 rt_thread_t tid;

@@ -60,10 +60,10 @@ void rt_file_thread_entry(void* parameter)
 		if(rt_mq_recv (global.save_mq, &msg,sizeof(msg_t),  RT_WAITING_FOREVER) != RT_EOK)
 		{
 			rt_kprintf("save ==> recv mq error\n");
-			rt_thread_delay(RT_TICK_PER_SECOND * 10/1000);
+			rt_thread_delay(2);
 			continue;
 		}
-		rt_kprintf("save ==>%d-%d-%d\n",msg.type,msg.value,msg.reserve);
+		// rt_kprintf("s>%d-%d-%d\n",msg.type,msg.value,msg.reserve);
 		switch(msg.type)
 		{
 			case CAN1_SAVE:
@@ -78,6 +78,15 @@ void rt_file_thread_entry(void* parameter)
 				rt_pin_write(0,1);
 				break;
 			case CAN2_SAVE:
+				rt_memset(buf,0,MEMPOLL_SIZE);
+				rt_memcpy(buf,msg.p,msg.value);
+				rt_mp_free(msg.p);
+				save(file_name[1],buf,msg.value);
+				if(get_file_size(file_name[1]) >= FILE_MAX_SIZE)
+				{
+					new_file(file_name[1],"/CH2");
+				}
+				rt_pin_write(0,1);
 				break;
 			default:
 				break;
