@@ -16,19 +16,11 @@ void rt_can1_thread_entry(void* parameter)
 	static char * buf = RT_NULL;
 	// buf 数据长度
 	static int len = 0;
-	// can 数据hextostr
-	static char tmp[64];
-	static char *frame_type = RT_NULL;
-	// 每次存储帧数量
-	static int save_frame_sum = 0;
 	// 存储的次数
-	static int save_sum = 0;
-	// 时间
-	time_t timep;  
-  struct tm *tm_p; 
-
+	static int save_index = 0;
+	
 	rt_kprintf("can1 thread start...\n");
-	can_init(CAN1,1000000);
+	can_init(CAN1,CAN_DEFAULT_BPS);
 	can_filter_init(CAN_FILTER_CHANNEL, ENABLE);
 	buf = (char *)rt_mp_alloc(&global.mempool,RT_WAITING_FOREVER);
 	rt_memset(buf,0,MEMPOLL_SIZE);
@@ -38,23 +30,13 @@ void rt_can1_thread_entry(void* parameter)
 		{
 			if(len > 0)
 			{
-				msg_t send_msg;
-				rt_memset(&send_msg,0,sizeof(msg_t));
-				send_msg.type = CAN1_SAVE;
-				send_msg.value = len;
-				send_msg.p = buf;
-				send_msg.reserve = save_sum;
-				rt_mq_send(global.save_mq, &send_msg, sizeof(msg_t));
-				buf = (char *)rt_mp_alloc(&global.mempool,RT_WAITING_FOREVER);
-				rt_memset(buf,0,MEMPOLL_SIZE);
-				rt_kprintf("can1==>%d-%d-%d\n",save_frame_sum,len,save_sum);
+				buf = send_save_msg(CAN1_SAVE,buf,len,save_index);
 				len = 0;
-				save_frame_sum = 0;
-				save_sum ++;
+				save_index ++;
 			}
 			continue;
 		}
-		rt_pin_write(2,0);
+	
 		switch(msg.type)
 		{
 			case CAN1_STOP:
@@ -64,64 +46,15 @@ void rt_can1_thread_entry(void* parameter)
 				can_filter_init(CAN_FILTER_CHANNEL,ENABLE);
 				break;
 			case CAN1_RECV:
+				rt_pin_write(2,0);
 				can_msg = msg.p;
-				rt_memset(tmp,0,sizeof(tmp));
-				if(!can_msg->RTR){
-					hex_2_str((const char *)can_msg->Data,tmp,can_msg->DLC);
-				} 
-				if(can_msg->IDE)
-				{
-					// 扩展帧
-					if(can_msg->RTR)
-					{
-						// 远程帧
-						global.frame_info[0].ERF ++;
-						frame_type = frame_type_list[2];
-					}else
-					{
-						// 数据帧
-						global.frame_info[0].EDF ++;
-						frame_type = frame_type_list[3];
-					}
-				}else
-				{
-					// 标准帧
-						// 扩展帧
-					if(can_msg->RTR)
-					{
-						// 远程帧
-						global.frame_info[0].SRF ++;
-						frame_type = frame_type_list[0];
-					}else
-					{
-						// 数据帧
-						global.frame_info[0].SDF ++;
-						frame_type = frame_type_list[1];
-					}
-				}
-				time(&timep);
-				tm_p =localtime(&timep);
-				sprintf(&buf[len],"%04d-%02d-%02d %02d:%02d:%02d,%s,0x%X,%s\n",
-					tm_p->tm_year + 1900,(1+tm_p->tm_mon), tm_p->tm_mday,
-					tm_p->tm_hour, tm_p->tm_min, tm_p->tm_sec,
-					frame_type,can_msg->StdId + can_msg->ExtId,tmp);
+				frame_to_csv(msg.type,can_msg,buf+len);
 				len += FRAME_SIZE;
-				save_frame_sum ++;
 				if(len >= CAN_BUF_MAX_SIZE){
 					// 进行存储
-					msg_t send_msg;
-					rt_memset(&send_msg,0,sizeof(msg_t));
-					send_msg.type = CAN1_SAVE;
-					send_msg.value = len;
-					send_msg.p = buf;
-					send_msg.reserve = save_sum;
-					rt_mq_send(global.save_mq, &send_msg, sizeof(msg_t));
-					buf = (char *)rt_mp_alloc(&global.mempool,RT_WAITING_FOREVER);
-					rt_memset(buf,0,MEMPOLL_SIZE);
-					rt_kprintf("can1==>%d-%d-%d\n",save_frame_sum,len,save_sum);
+					buf = send_save_msg(CAN1_SAVE,buf,len,save_index);
 					len = 0;
-					save_frame_sum = 0;
-					save_sum ++;
+					save_index ++;
 				}
 				rt_pin_write(2,1);
 				break;

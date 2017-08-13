@@ -1,8 +1,8 @@
 #include "common.h"
 #include <stdio.h>
+#include <time.h> 
 global_t global;
-// 帧类型
-char *frame_type_list[4] = {"SRF","SDF","ERF","EDF"};
+
 rt_err_t mempool_init()
 {
 	return rt_mp_init(&global.mempool, "mp1",(void *)0x10000000, 0x10000, MEMPOLL_SIZE);
@@ -168,6 +168,94 @@ void can_send_test(CAN_TypeDef* CANx,unsigned int data)
 	TxMessage.Data[6] = (data>>8) & 0xFF;
 	TxMessage.Data[7] = data & 0xFF;
 	CAN_Transmit(CANx, &TxMessage);	
+}
+
+
+// 发送一个存储信息，返回一个新的内存块
+char * send_save_msg(msg_type_t type,void *buf,int len,int save_index)
+{
+	msg_t send_msg;		
+	char * result = RT_NULL;
+	rt_memset(&send_msg,0,sizeof(msg_t));			
+	send_msg.type = type;
+	send_msg.value = len;
+	send_msg.p = buf;
+	send_msg.reserve = save_index;
+	rt_mq_send(global.save_mq, &send_msg, sizeof(msg_t));
+	result = (char *)rt_mp_alloc(&global.mempool,RT_WAITING_FOREVER);
+	rt_memset(result,0,MEMPOLL_SIZE);
+	rt_kprintf("can1==>%d-%d\n",len,save_index);
+	return result;
+}
+// 将can数据解析存储buf，格式为csv
+int frame_to_csv(msg_type_t type, CanRxMsg *can_msg, char* buf)
+{
+	int can_index = 0;
+	// can 数据hextostr
+	char tmp[64];
+	// 帧类型
+	char *frame_type = RT_NULL;
+		// 时间
+	time_t timep;  
+  struct tm *tm_p; 
+	// 帧类型
+	static char *frame_type_list[4] = {"SRF","SDF","ERF","EDF"};
+	
+	if(can_msg == RT_NULL)
+		return -1;
+	switch(type)
+	{
+		case CAN1_RECV:
+			can_index = 0;
+			break;
+		case CAN2_RECV:
+			can_index = 1;
+			break;
+		default:
+			return -1;
+	}
+	rt_memset(tmp,0,sizeof(tmp));
+	if(!can_msg->RTR){
+		hex_2_str((const char *)can_msg->Data,tmp,can_msg->DLC);
+	} 
+	if(can_msg->IDE)
+	{	
+		// 扩展帧
+		if(can_msg->RTR)
+		{
+			// 远程帧
+			global.frame_info[can_index].ERF ++;
+			frame_type = frame_type_list[2];
+		}else
+		{	
+			// 数据帧
+			global.frame_info[can_index].EDF ++;
+			frame_type = frame_type_list[3];
+		}
+	}else
+	{
+		// 标准帧
+		// 扩展帧
+		if(can_msg->RTR)
+		{
+			// 远程帧
+			global.frame_info[can_index].SRF ++;
+			frame_type = frame_type_list[0];
+		}else
+		{
+			// 数据帧
+			global.frame_info[can_index].SDF ++;
+			frame_type = frame_type_list[1];
+		}
+	}
+	
+	time(&timep);
+	tm_p =localtime(&timep);
+	sprintf(buf,"%04d-%02d-%02d %02d:%02d:%02d,%s,0x%X,%s\n",
+					tm_p->tm_year + 1900,(1+tm_p->tm_mon), tm_p->tm_mday,
+					tm_p->tm_hour, tm_p->tm_min, tm_p->tm_sec,
+					frame_type,can_msg->StdId + can_msg->ExtId,tmp);
+	return 0;
 }
 
 #ifdef RT_USING_FINSH

@@ -10,6 +10,8 @@
 #define	MQ_LEN						32
 #define	FILE_MAX_SIZE			200*1024*1024
 
+#define	CAN_DEFAULT_BPS		1000000
+
 // 不够64字节，补0,为扇区的整数倍
 #define FRAME_SIZE				64
 
@@ -66,8 +68,6 @@ typedef struct
 
 
 extern global_t global;
-// 帧类型
-extern char *frame_type_list[4];
 
 extern int rt_can1_init(void);
 extern int rt_can2_init(void);
@@ -77,6 +77,12 @@ extern rt_err_t mempool_init(void);
 extern rt_err_t messagequeue_init(void);
 //字节流转换为十六进制字符串
 extern void hex_2_str(const char *src,  char *dest, int len );
+
+// 发送一个存储信息，返回一个新的内存块
+extern char * send_save_msg(msg_type_t type,void *buf,int len,int save_index);
+
+// 将can数据解析存储buf，格式为csv
+extern int frame_to_csv(msg_type_t type, CanRxMsg *can_msg, char* buf);
 
 extern void can_init(CAN_TypeDef* CANx, unsigned int bps);
 extern void can_filter_init(unsigned int num, FunctionalState NewState);
