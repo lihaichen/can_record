@@ -25,7 +25,7 @@ void rt_can1_thread_entry(void* parameter)
 	rt_memset(buf,0,MEMPOLL_SIZE);
 	while(1)
 	{		
-		if(rt_mq_recv (global.can1_mq, &msg,sizeof(msg_t),  RT_TICK_PER_SECOND/2) != RT_EOK)
+		if(rt_mq_recv (global.can1_mq, &msg,sizeof(msg_t),  IDLE_SAVE) != RT_EOK)
 		{
 			if(len > 0)
 			{

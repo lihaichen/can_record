@@ -4,17 +4,24 @@
 #include <rtthread.h>
 #include "stm32f4xx_can.h"
 
-// 内存池的块大小
-#define	MEMPOLL_SIZE			(512*31 + FRAME_SIZE * 3)
-#define MEMPOLL_COUNT			5
-#define	CAN_BUF_MAX_SIZE	512*31
-#define	MQ_LEN						32
-#define	FILE_MAX_SIZE			100*1024*1024
-
-#define	CAN_DEFAULT_BPS		1000000
-
 // 不够64字节，补0,为扇区的整数倍
 #define FRAME_SIZE				64
+
+#define	CAN_BUF_MAX_SIZE	21*1024
+
+// 内存池的块大小
+#define	MEMPOLL_SIZE			(CAN_BUF_MAX_SIZE + (FRAME_SIZE * 2))
+#define MEMPOLL_COUNT			3
+#define	MQ_LEN						32
+
+// 文件最大大小
+#define	FILE_MAX_SIZE			100*1024*1024
+
+// can默认速率
+#define	CAN_DEFAULT_BPS		1000000
+
+// can 空闲时间进行存储
+#define IDLE_SAVE					RT_TICK_PER_SECOND/2
 
 // 运行状态机
 typedef enum 
