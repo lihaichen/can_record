@@ -98,4 +98,6 @@ extern void can_filter_init(unsigned int num, FunctionalState NewState);
 // 存储线程初始化
 extern int rt_file_init(void);
 extern void can_send_test(CAN_TypeDef* CANx,unsigned int data);
+// 看门狗线程
+extern int rt_wd_init(void);
 #endif

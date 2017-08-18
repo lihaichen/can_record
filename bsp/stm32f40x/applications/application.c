@@ -37,61 +37,12 @@
 #ifdef RT_USING_RTC
 #include "stm32f4_rtc.h"
 #endif
-#include <drivers/pin.h>
 #include "common.h"
-
-/*
-*使用idle线程进行喂狗
-*2s喂一次
-*/
-static void rt_thread_idle_hook(void)
-{
-	static rt_tick_t time; 
-	// 看门狗
-	static rt_tick_t watchdog_time = 0;
-	// 
-	time = rt_tick_get();
-	if((time - watchdog_time) > RT_TICK_PER_SECOND)
-	{
-		IWDG_ReloadCounter();
-		watchdog_time = rt_tick_get();
-	}
-	// 状态led
-	switch(global.status)
-	{
-		case RUN:
-		{
-			unsigned int time_s = (time%RT_TICK_PER_SECOND);
-			if(time_s < RT_TICK_PER_SECOND/2){
-				rt_pin_write(1,0);
-			}else
-			{
-				rt_pin_write(1,1);
-			}
-		}
-			break;
-		default:
-			rt_pin_write(1,0);
-			break;
-	}
-}
 
 void rt_init_thread_entry(void* parameter)
 {
 		global.status = INIT;
-		// 初始化状态LED
-		rt_pin_mode(0,0);
-		rt_pin_mode(1,0);
-		rt_pin_mode(2,0);
-		rt_pin_write(0,1);
-		rt_pin_write(1,1);
-		rt_pin_write(2,1);
-	  IWDG_WriteAccessCmd(IWDG_WriteAccess_Enable);//使能写入PR和RLR
-		IWDG_SetPrescaler(IWDG_Prescaler_256);  //写入PR预分频值
-		IWDG_SetReload(0xFFF);  //写入RLR
-		IWDG_Enable();//KR写入0xCCCC
-		rt_thread_idle_sethook(rt_thread_idle_hook);
-		
+		rt_wd_init();
 #ifdef RT_USING_RTC
 		rt_hw_rtc_init();
 #endif		

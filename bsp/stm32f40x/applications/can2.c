@@ -5,7 +5,7 @@
 
 #define CAN_FILTER_CHANNEL	14
 
-void rt_can2_thread_entry(void* parameter)
+static void rt_can2_thread_entry(void* parameter)
 {
 	// 消息队列
 	static msg_t msg;
