@@ -262,11 +262,10 @@ int frame_to_csv(msg_type_t type, CanRxMsg *can_msg, char* buf)
 	
 	time(&timep);
 	tm_p =localtime(&timep);
-	sprintf(buf,"%04d-%02d-%02d %02d:%02d:%02d.%02d,%s,0x%X,%s\n",
+	return sprintf(buf,"%04d-%02d-%02d %02d:%02d:%02d.%02d,%s,0x%X,%s\n",
 					tm_p->tm_year + 1900,(1+tm_p->tm_mon), tm_p->tm_mday,
-					tm_p->tm_hour, tm_p->tm_min, tm_p->tm_sec,rt_tick_get()%100,
+					tm_p->tm_hour, tm_p->tm_min, tm_p->tm_sec,(int)(rt_tick_get()%100),
 					frame_type,can_msg->StdId + can_msg->ExtId,tmp);
-	return 0;
 }
 
 #ifdef RT_USING_FINSH

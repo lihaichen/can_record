@@ -51,8 +51,12 @@ static void rt_can2_thread_entry(void* parameter)
 				len += FRAME_SIZE;
 				if(len >= CAN_BUF_MAX_SIZE){
 					// 进行存储
+					static char last_buf[FRAME_SIZE << 1];
+					rt_memset(last_buf,0,sizeof(last_buf));
+					len = len - CAN_BUF_MAX_SIZE;
+					rt_memcpy(last_buf,buf+CAN_BUF_MAX_SIZE,len);
 					buf = send_save_msg(CAN2_SAVE,buf,len,save_index);
-					len = 0;
+					rt_memcpy(buf,last_buf,len);
 					save_index ++;
 				}
 				rt_pin_write(2,1);
