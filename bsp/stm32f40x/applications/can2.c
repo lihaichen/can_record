@@ -47,15 +47,15 @@ static void rt_can2_thread_entry(void* parameter)
 			case CAN2_RECV:
 				rt_pin_write(2,0);
 				can_msg = msg.p;
-				frame_to_csv(msg.type,can_msg,buf+len);
-				len += FRAME_SIZE;
+				len += frame_to_csv(msg.type,can_msg,buf+len);
+				// len += FRAME_SIZE;
 				if(len >= CAN_BUF_MAX_SIZE){
 					// 进行存储
 					static char last_buf[FRAME_SIZE << 1];
 					rt_memset(last_buf,0,sizeof(last_buf));
 					len = len - CAN_BUF_MAX_SIZE;
 					rt_memcpy(last_buf,buf+CAN_BUF_MAX_SIZE,len);
-					buf = send_save_msg(CAN2_SAVE,buf,len,save_index);
+					buf = send_save_msg(CAN2_SAVE,buf,CAN_BUF_MAX_SIZE,save_index);
 					rt_memcpy(buf,last_buf,len);
 					save_index ++;
 				}
