@@ -9,9 +9,13 @@ static void rt_wd_thread_entry(void* parameter)
 	rt_pin_mode(0,0);
 	rt_pin_mode(1,0);
 	rt_pin_mode(2,0);
+	rt_pin_mode(3,0);
+	rt_pin_mode(4,0);
 	rt_pin_write(0,1);
 	rt_pin_write(1,1);
 	rt_pin_write(2,1);	
+	rt_pin_write(3,1);
+	rt_pin_write(4,1);
 	IWDG_WriteAccessCmd(IWDG_WriteAccess_Enable);//使能写入PR和RLR
 	IWDG_SetPrescaler(IWDG_Prescaler_256);  //写入PR预分频值
 	IWDG_SetReload(0xFFF);  //写入RLR
@@ -21,13 +25,13 @@ static void rt_wd_thread_entry(void* parameter)
 		switch(global.status)
 		{
 			case RUN:
-				rt_pin_write(1,0);
+				rt_pin_write(0,0);
 				rt_thread_delay(RT_TICK_PER_SECOND/2);
-				rt_pin_write(1,1);
+				rt_pin_write(0,1);
 				rt_thread_delay(RT_TICK_PER_SECOND/2);
 			break;
 			default:
-				rt_pin_write(1,0);
+				rt_pin_write(0,0);
 				rt_thread_delay(RT_TICK_PER_SECOND);
 				break;
 		}

@@ -19,7 +19,7 @@
 #define	FILE_MAX_SIZE			100*1024*1024
 
 // can默认速率
-#define	CAN_DEFAULT_BPS		(1000*1000)
+#define	CAN_DEFAULT_BPS		(250*1000)
 
 // can 空闲时间进行存储
 #define IDLE_SAVE					RT_TICK_PER_SECOND/2

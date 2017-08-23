@@ -45,7 +45,7 @@ static void rt_can1_thread_entry(void* parameter)
 				can_filter_init(CAN_FILTER_CHANNEL,ENABLE);
 				break;
 			case CAN1_RECV:
-				rt_pin_write(2,0);
+				rt_pin_write(1,0);
 				can_msg = msg.p;
 // 
 #if CAN_FILL
@@ -71,7 +71,7 @@ static void rt_can1_thread_entry(void* parameter)
 				}
 #endif			
 				
-				rt_pin_write(2,1);
+				rt_pin_write(1,1);
 				break;
 			default:
 				break;

@@ -45,7 +45,7 @@ static void rt_can2_thread_entry(void* parameter)
 				can_filter_init(CAN_FILTER_CHANNEL,ENABLE);
 				break;
 			case CAN2_RECV:
-				rt_pin_write(2,0);
+				rt_pin_write(3,0);
 				can_msg = msg.p;
 #if CAN_FILL
 			frame_to_csv(msg.type,can_msg,buf+len);
@@ -69,7 +69,7 @@ static void rt_can2_thread_entry(void* parameter)
 					save_index ++;
 				}
 #endif			
-				rt_pin_write(2,1);
+				rt_pin_write(3,1);
 				break;
 			default:
 				break;

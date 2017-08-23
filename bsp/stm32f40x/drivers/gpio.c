@@ -29,10 +29,11 @@ struct pin_index
 
 static const struct pin_index pins[] =
 {
-
-    { 0, RCC_AHB1Periph_GPIOE, GPIOE, GPIO_Pin_1},
-		{ 1, RCC_AHB1Periph_GPIOE, GPIOE, GPIO_Pin_12},
-		{ 2, RCC_AHB1Periph_GPIOE, GPIOE, GPIO_Pin_13},
+	{ 0, RCC_AHB1Periph_GPIOE, GPIOE, GPIO_Pin_1},
+	{ 1, RCC_AHB1Periph_GPIOE, GPIOE, GPIO_Pin_12},
+	{ 2, RCC_AHB1Periph_GPIOE, GPIOE, GPIO_Pin_13},
+	{ 3, RCC_AHB1Periph_GPIOE, GPIOE, GPIO_Pin_14},
+	{ 4, RCC_AHB1Periph_GPIOE, GPIOE, GPIO_Pin_15},
 };
 
 #define ITEM_NUM(items) sizeof(items)/sizeof(items[0])

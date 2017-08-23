@@ -39,17 +39,18 @@
 #endif
 #include "common.h"
 #include "i2c.h"
+#include "ds1340.h"
 
 void rt_init_thread_entry(void* parameter)
 {
 		global.status = INIT;
-		rt_wd_init();
 		i2c_init();
 #ifdef RT_USING_RTC
-		// DS1340Init("rtc","i2c");
-		rt_hw_rtc_init();
+		DS1340Init("rtc","i2c");
+		// rt_hw_rtc_init();
 #endif		
-	
+		time(&global.time);
+		rt_wd_init();
     /* Filesystem Initialization */
 #if defined(RT_USING_DFS) && defined(RT_USING_DFS_ELMFAT)
 		rt_hw_sdcard_init();
