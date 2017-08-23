@@ -2,6 +2,7 @@
 #define __COMMON_H__
 #include <rthw.h>
 #include <rtthread.h>
+#include <time.h>
 #include "stm32f4xx_can.h"
 
 // 不够64字节，补0,为扇区的整数倍
@@ -22,6 +23,9 @@
 
 // can 空闲时间进行存储
 #define IDLE_SAVE					RT_TICK_PER_SECOND/2
+
+// 不够64字节是否填充
+#define CAN_FILL					1
 
 // 运行状态机
 typedef enum 
@@ -67,12 +71,15 @@ typedef struct
 typedef struct 
 {
 	status_type_t status;
+	time_t time;
 	struct rt_mempool mempool1;
 	struct rt_mempool *mempool2;
 	rt_mq_t can1_mq;
 	rt_mq_t can2_mq;
 	rt_mq_t save_mq;
 	frame_info_t frame_info[2];
+	// 文件长度
+	unsigned int file_len[2];
 }global_t;
 
 

@@ -169,5 +169,7 @@
 
 // #define RT_USING_SDIO										
 // #define RT_USING_CAN
-#define RT_USING_RTC
+#define	RT_USING_I2C					1
+#define RT_USING_I2C_BITOPS				1
+#define RT_USING_RTC					1
 #endif

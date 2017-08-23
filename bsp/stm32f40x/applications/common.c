@@ -86,7 +86,7 @@ void can_init(CAN_TypeDef* CANx, unsigned int bps)
 	CAN_InitStructure.CAN_NART = DISABLE;			/* 禁止仲裁丢失或出错后的自动重传功能 */
 	CAN_InitStructure.CAN_RFLM = DISABLE;			/* 禁止接收FIFO加锁模式 */
 	CAN_InitStructure.CAN_TXFP = DISABLE;			/* 禁止传输FIFO优先级 */
-	CAN_InitStructure.CAN_Mode = CAN_Mode_Normal;	/* 设置CAN为回环模式 */
+	CAN_InitStructure.CAN_Mode = CAN_Mode_Silent;	/* 设置CAN为回环模式 */
 	
 	/* 
 		CAN 波特率 = RCC_APB1Periph_CAN1 / Prescaler / (SJW + BS1 + BS2);

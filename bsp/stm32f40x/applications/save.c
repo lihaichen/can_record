@@ -71,10 +71,18 @@ void rt_file_thread_entry(void* parameter)
 				rt_memcpy(buf,msg.p,msg.value);
 				rt_mp_free(msg.p);
 				save(file_name[0],buf,msg.value);
+#if 0			
 				if(get_file_size(file_name[0]) >= FILE_MAX_SIZE)
 				{
 					new_file(file_name[0],"/CH1");
 				}
+#else
+				global.file_len[0] += msg.value;
+				if(global.file_len[0] >= FILE_MAX_SIZE){
+					global.file_len[0] = 0;
+					new_file(file_name[0],"/CH1");
+				}
+#endif				
 				rt_pin_write(0,1);
 				break;
 			case CAN2_SAVE:
@@ -82,10 +90,18 @@ void rt_file_thread_entry(void* parameter)
 				rt_memcpy(buf,msg.p,msg.value);
 				rt_mp_free(msg.p);
 				save(file_name[1],buf,msg.value);
+#if 0			
 				if(get_file_size(file_name[1]) >= FILE_MAX_SIZE)
 				{
 					new_file(file_name[1],"/CH2");
 				}
+#else
+				global.file_len[1] += msg.value;
+				if(global.file_len[1] >= FILE_MAX_SIZE){
+					global.file_len[1] = 0;
+					new_file(file_name[1],"/CH2");
+				}
+#endif				
 				rt_pin_write(0,1);
 				break;
 			default:

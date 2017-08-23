@@ -26,9 +26,11 @@ if GetDepend('RT_USING_CAN'):
     src += ['bxcan.c']
 
 if GetDepend('RT_USING_RTC'):
-    src += ['stm32f4_rtc.c']
+    src += ['stm32f4_rtc.c', 'ds1340.c']
 
-
+if GetDepend('RT_USING_I2C'):
+    src += ['i2c.c']
+	
 CPPPATH = [cwd]
 
 group = DefineGroup('Drivers', src, depend = [''], CPPPATH = CPPPATH)
