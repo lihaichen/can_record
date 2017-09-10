@@ -49,7 +49,7 @@ void rt_init_thread_entry(void* parameter)
 		us_timer_init();
 #ifdef RT_USING_RTC
 		DS1340Init("rtc","i2c");
-		rt_hw_rtc_init();
+		// rt_hw_rtc_init();
 #endif		
 		time(&global.power_time);
 		rt_wd_init();
