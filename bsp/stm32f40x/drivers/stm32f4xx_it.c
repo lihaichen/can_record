@@ -164,7 +164,14 @@ void CAN2_RX0_IRQHandler(void){
 	rt_mq_send(global.can2_mq, &msg, sizeof(msg_t));
 	i = (i+1)%(MQ_LEN);
 }
-
+void TIM5_IRQHandler(void)
+{
+	if(TIM_GetITStatus(TIM3,TIM_IT_Update)==SET) //溢出中断
+	{
+		global.run_time++;
+	}
+	TIM_ClearITPendingBit(TIM3,TIM_IT_Update);  //清除中断标志位
+}
 /**
   * @}
   */

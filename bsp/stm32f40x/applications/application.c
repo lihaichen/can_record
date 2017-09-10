@@ -51,7 +51,7 @@ void rt_init_thread_entry(void* parameter)
 		DS1340Init("rtc","i2c");
 		rt_hw_rtc_init();
 #endif		
-		time(&global.time);
+		time(&global.power_time);
 		rt_wd_init();
     /* Filesystem Initialization */
 #if defined(RT_USING_DFS) && defined(RT_USING_DFS_ELMFAT)

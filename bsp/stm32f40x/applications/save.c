@@ -25,7 +25,7 @@ static void new_file(char *buf,const char *pre)
 {
 	time_t timep;  
   struct tm *tm_p; 
-	timep = global.time + rt_tick_get()/RT_TICK_PER_SECOND;
+	timep = global.power_time + global.run_time;
 	tm_p =localtime(&timep);
 	sprintf(buf,"%s_%04d%02d%02d-%02d%02d%02d.csv",pre,
 					tm_p->tm_year + 1900,(1+tm_p->tm_mon), tm_p->tm_mday,

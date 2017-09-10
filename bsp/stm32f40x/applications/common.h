@@ -71,7 +71,10 @@ typedef struct
 typedef struct 
 {
 	status_type_t status;
-	time_t time;
+	// 系统加电时间
+	time_t power_time;
+	// 系统运行时间
+	time_t run_time;
 	struct rt_mempool mempool1;
 	struct rt_mempool *mempool2;
 	rt_mq_t can1_mq;
