@@ -15,11 +15,10 @@ void us_timer_init(){
 	TIM_Cmd(TIM5,ENABLE);
 	
 	NVIC_InitStructure.NVIC_IRQChannel=TIM5_IRQn; //定时器5中断
-	NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority=0x01; //抢占优先级1
-	NVIC_InitStructure.NVIC_IRQChannelSubPriority=0x03; //子优先级3
+	NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority=15; //抢占优先级1
+	NVIC_InitStructure.NVIC_IRQChannelSubPriority=15; //子优先级3
 	NVIC_InitStructure.NVIC_IRQChannelCmd=ENABLE;
 	NVIC_Init(&NVIC_InitStructure);
-	
 }
 
 int get_us_timer(){

@@ -143,13 +143,18 @@ void can_filter_init(unsigned int num, FunctionalState NewState)
 //字节流转换为十六进制字符串
 void hex_2_str(const char *src,  char *dest, int len )  
 {  
-    int  i;  
-    char tmp[3];  
+    int  i, res_len;  
+    char tmp[3]; 
     for( i = 0; i < len; i++ )  
     {  
         sprintf(tmp, "%02X ", (unsigned char) src[i] );  
         rt_memcpy(&dest[i * 3], tmp, 3);  
-    }  
+    }	
+		res_len = rt_strlen(dest);
+		if(res_len > 0)
+		{
+				dest[res_len - 1] = 0;
+		}
     return ;  
 }  
 
@@ -263,10 +268,10 @@ int frame_to_csv(msg_type_t type, CanRxMsg *can_msg, char* buf)
 	us = get_us_timer();
 	timep = global.power_time + global.run_time;
 	tm_p =localtime(&timep);
-	return sprintf(buf,"%04d-%02d-%02d %02d:%02d:%02d.%06d,%s,0x%X,%02d,%s\n",
-					tm_p->tm_year + 1900,(1+tm_p->tm_mon), tm_p->tm_mday,
-					tm_p->tm_hour, tm_p->tm_min, tm_p->tm_sec,us,
-					frame_type,can_msg->StdId + can_msg->ExtId,can_msg->DLC,tmp);
+	return sprintf(buf,"%02d-%02d-%02d %02d:%02d:%02d.%04d,%s,0x%X,%d,%s\n",
+					tm_p->tm_year + 1900 - 2000,(1+tm_p->tm_mon), tm_p->tm_mday,
+					tm_p->tm_hour, tm_p->tm_min, tm_p->tm_sec,us/100,
+					frame_type,can_msg->StdId + can_msg->ExtId,can_msg->DLC%10,tmp);
 }
 
 #ifdef RT_USING_FINSH

@@ -6,13 +6,13 @@
 #include "stm32f4xx_can.h"
 
 // 不够64字节，补0,为扇区的整数倍
-#define FRAME_SIZE				72
+#define FRAME_SIZE				64
 
 #define	CAN_BUF_MAX_SIZE	(21*1024)
 
 // 内存池的块大小
 #define	MEMPOLL_SIZE			(CAN_BUF_MAX_SIZE + (FRAME_SIZE * 2))
-#define MEMPOLL_COUNT			2
+#define MEMPOLL_COUNT			3
 #define	MQ_LEN						32
 
 // 文件最大大小
