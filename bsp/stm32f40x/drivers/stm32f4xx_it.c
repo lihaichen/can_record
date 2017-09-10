@@ -166,11 +166,11 @@ void CAN2_RX0_IRQHandler(void){
 }
 void TIM5_IRQHandler(void)
 {
-	if(TIM_GetITStatus(TIM3,TIM_IT_Update)==SET) //溢出中断
+	if(TIM_GetITStatus(TIM5,TIM_IT_Update)==SET) //溢出中断
 	{
 		global.run_time++;
 	}
-	TIM_ClearITPendingBit(TIM3,TIM_IT_Update);  //清除中断标志位
+	TIM_ClearITPendingBit(TIM5,TIM_IT_Update);  //清除中断标志位
 }
 /**
   * @}

@@ -11,7 +11,7 @@ void us_timer_init(){
 	conf.TIM_ClockDivision = TIM_CKD_DIV1;
 	TIM_TimeBaseInit(TIM5,&conf);
 		
-	TIM_ITConfig(TIM5,TIM_IT_Update,ENABLE); //允许定时器3更新中断
+	TIM_ITConfig(TIM5,TIM_IT_Update,ENABLE); //允许定时器5更新中断
 	TIM_Cmd(TIM5,ENABLE);
 	
 	NVIC_InitStructure.NVIC_IRQChannel=TIM5_IRQn; //定时器5中断

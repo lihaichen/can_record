@@ -8,15 +8,15 @@
 // 不够64字节，补0,为扇区的整数倍
 #define FRAME_SIZE				72
 
-#define	CAN_BUF_MAX_SIZE	21*1024
+#define	CAN_BUF_MAX_SIZE	(21*1024)
 
 // 内存池的块大小
 #define	MEMPOLL_SIZE			(CAN_BUF_MAX_SIZE + (FRAME_SIZE * 2))
-#define MEMPOLL_COUNT			3
+#define MEMPOLL_COUNT			2
 #define	MQ_LEN						32
 
 // 文件最大大小
-#define	FILE_MAX_SIZE			100*1024*1024
+#define	FILE_MAX_SIZE			50*1024*1024
 
 // can默认速率
 #define	CAN_DEFAULT_BPS		(250*1000)
