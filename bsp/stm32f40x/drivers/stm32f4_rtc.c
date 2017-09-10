@@ -221,7 +221,7 @@ void rt_hw_rtc_init(void)
     /* no private */
     rtc.user_data = RT_NULL;
 
-    rt_device_register(&rtc, "rtc", RT_DEVICE_FLAG_RDWR);
+    rt_device_register(&rtc, "rtc2", RT_DEVICE_FLAG_RDWR);
 
     return;
 }

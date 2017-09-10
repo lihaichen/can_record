@@ -35,7 +35,7 @@ static void rt_wd_thread_entry(void* parameter)
 				rt_thread_delay(RT_TICK_PER_SECOND);
 				break;
 		}
-		IWDG_ReloadCounter();
+		IWDG_ReloadCounter();	
 	}
 }
 

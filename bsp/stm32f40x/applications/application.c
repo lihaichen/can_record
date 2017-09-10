@@ -40,14 +40,16 @@
 #include "common.h"
 #include "i2c.h"
 #include "ds1340.h"
+#include "us.h"
 
 void rt_init_thread_entry(void* parameter)
 {
 		global.status = INIT;
 		i2c_init();
+		us_timer_init();
 #ifdef RT_USING_RTC
 		DS1340Init("rtc","i2c");
-		// rt_hw_rtc_init();
+		rt_hw_rtc_init();
 #endif		
 		time(&global.time);
 		rt_wd_init();

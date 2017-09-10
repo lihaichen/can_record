@@ -6,7 +6,7 @@
 #include "stm32f4xx_can.h"
 
 // 不够64字节，补0,为扇区的整数倍
-#define FRAME_SIZE				64
+#define FRAME_SIZE				72
 
 #define	CAN_BUF_MAX_SIZE	21*1024
 

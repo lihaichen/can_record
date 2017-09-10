@@ -1,6 +1,7 @@
 #include "common.h"
 #include <stdio.h>
 #include <time.h> 
+#include "us.h"
 global_t global;
 
 rt_err_t mempool_init()
@@ -210,6 +211,7 @@ int frame_to_csv(msg_type_t type, CanRxMsg *can_msg, char* buf)
 	time_t timep;  
   struct tm *tm_p; 
 	rt_tick_t tick;
+	int us;
 	// 帧类型
 	static char *frame_type_list[4] = {"SRF","SDF","ERF","EDF"};
 	tick = rt_tick_get();
@@ -260,11 +262,12 @@ int frame_to_csv(msg_type_t type, CanRxMsg *can_msg, char* buf)
 			frame_type = frame_type_list[1];
 		}
 	}
+	us = get_us_timer();
 	timep = global.time + tick/RT_TICK_PER_SECOND;
 	tm_p =localtime(&timep);
-	return sprintf(buf,"%04d-%02d-%02d %02d:%02d:%02d.%02d,%s,0x%X,%s\n",
+	return sprintf(buf,"%04d-%02d-%02d %02d:%02d:%02d.%.6d,%s,0x%X,%s\n",
 					tm_p->tm_year + 1900,(1+tm_p->tm_mon), tm_p->tm_mday,
-					tm_p->tm_hour, tm_p->tm_min, tm_p->tm_sec,(int)(tick%100),
+					tm_p->tm_hour, tm_p->tm_min, tm_p->tm_sec,us,
 					frame_type,can_msg->StdId + can_msg->ExtId,tmp);
 }
 
