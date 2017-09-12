@@ -147,7 +147,10 @@ void CAN1_RX0_IRQHandler(void){
 	CAN_Receive(CAN1, CAN_FIFO0, &can_msg[i]);
 	msg.type = CAN1_RECV;
 	msg.p = (void *)&can_msg[i];
-	rt_mq_send(global.can1_mq, &msg, sizeof(msg_t));
+	if(rt_mq_send(global.can1_mq, &msg, sizeof(msg_t)) != RT_EOK)
+	{
+		rt_kprintf("1");
+	}
 	i = (i+1)%(MQ_LEN);
 }
 
@@ -161,7 +164,10 @@ void CAN2_RX0_IRQHandler(void){
 	CAN_Receive(CAN2, CAN_FIFO0, &can_msg[i]);
 	msg.type = CAN2_RECV;
 	msg.p = (void *)&can_msg[i];
-	rt_mq_send(global.can2_mq, &msg, sizeof(msg_t));
+	if(rt_mq_send(global.can2_mq, &msg, sizeof(msg_t)) != RT_EOK)
+	{
+		rt_kprintf("2");
+	}
 	i = (i+1)%(MQ_LEN);
 }
 void TIM5_IRQHandler(void)

@@ -46,13 +46,15 @@ void rt_init_thread_entry(void* parameter)
 {
 		global.status = INIT;
 		i2c_init();
-		us_timer_init();
 #ifdef RT_USING_RTC
 		DS1340Init("rtc","i2c");
 		// rt_hw_rtc_init();
 #endif		
-		time(&global.power_time);
 		rt_wd_init();
+		global.power_time = time(&global.power_time);
+		global.run_time = 0;
+		rt_kprintf("rtc=%d-%d\n",global.power_time, global.run_time);
+		us_timer_init();
     /* Filesystem Initialization */
 #if defined(RT_USING_DFS) && defined(RT_USING_DFS_ELMFAT)
 		rt_hw_sdcard_init();

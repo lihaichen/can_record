@@ -472,7 +472,7 @@ void get_partition_info()
 			part.offset = 0;
 			part.size   = 0;
 		}
-		rt_kprintf("SD_Init offset[%d] size[%d]\n",part.offset, part.size);
+		rt_kprintf("SD_Init offset[%d] size[%d] type[%d]\n",part.offset, part.size,part.type);
 		/* release sector buffer */
 		rt_free(sector);
 	}else{
