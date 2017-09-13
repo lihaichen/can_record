@@ -51,9 +51,6 @@ void rt_init_thread_entry(void* parameter)
 		// rt_hw_rtc_init();
 #endif		
 		rt_wd_init();
-		global.power_time = time(&global.power_time);
-		global.run_time = 0;
-		rt_kprintf("rtc=%d-%d\n",global.power_time, global.run_time);
 		us_timer_init();
     /* Filesystem Initialization */
 #if defined(RT_USING_DFS) && defined(RT_USING_DFS_ELMFAT)
@@ -67,6 +64,9 @@ void rt_init_thread_entry(void* parameter)
     {
         
 			rt_kprintf("File System initialized!\n");
+			global.power_time = time(RT_NULL);
+			global.run_time = 0;
+			rt_kprintf("rtc=%ld-%ld\n",global.power_time, global.run_time);
 			mempool_init();
 			messagequeue_init();
 			rt_can1_init();

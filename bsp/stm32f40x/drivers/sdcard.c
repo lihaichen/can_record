@@ -307,13 +307,12 @@ static rt_size_t rt_sdcard_read(rt_device_t dev, rt_off_t pos, void* buffer, rt_
 	SDTransferState Tr_status;
 	rt_uint32_t nr = size;
 	rt_uint32_t count = size << 2;
-	
+	uint64_t addr = ((uint64_t)(part.offset + pos) * SECTOR_SIZE);
 	rt_sem_take(&sd_lock, RT_WAITING_FOREVER);
 
   if (nr == 1)
    {
-      status = SD_ReadBlock(buffer,\
-									part.offset * SECTOR_SIZE + pos*SECTOR_SIZE, SECTOR_SIZE);
+      status = SD_ReadBlock(buffer,addr, SECTOR_SIZE);
 			if(status != SD_OK)
 				 goto ERR;
 			 status = SD_WaitReadOperation();
@@ -330,8 +329,7 @@ static rt_size_t rt_sdcard_read(rt_device_t dev, rt_off_t pos, void* buffer, rt_
    }
    else
    {
-		 status = SD_ReadMultiBlocks(buffer, \
-									part.offset * SECTOR_SIZE + pos*SECTOR_SIZE,SECTOR_SIZE, nr);
+		 status = SD_ReadMultiBlocks(buffer, addr,SECTOR_SIZE, nr);
 		 	if(status != SD_OK)
 				 goto ERR;
 			 status = SD_WaitReadOperation();
@@ -364,12 +362,12 @@ static rt_size_t rt_sdcard_write (rt_device_t dev, rt_off_t pos, const void* buf
 	SDTransferState Tr_status;
 	rt_uint32_t nr = size;
 	rt_uint32_t count = size << 4;
+	uint64_t addr = ((uint64_t)(part.offset + pos) * SECTOR_SIZE);
 	rt_sem_take(&sd_lock, RT_WAITING_FOREVER);
 
    if (nr == 1)
    {
-      status = SD_WriteBlock((uint8_t *)buffer,\
-										part.offset * SECTOR_SIZE + pos*SECTOR_SIZE, SECTOR_SIZE);
+      status = SD_WriteBlock((uint8_t *)buffer,addr, SECTOR_SIZE);
 			if(status != SD_OK)
 				 goto ERR;
 			 status = SD_WaitWriteOperation();
@@ -386,8 +384,7 @@ static rt_size_t rt_sdcard_write (rt_device_t dev, rt_off_t pos, const void* buf
    }
    else
    {
-				status = SD_WriteMultiBlocks((uint8_t *)buffer, \
-										part.offset * SECTOR_SIZE + pos*SECTOR_SIZE,SECTOR_SIZE, nr);
+				status = SD_WriteMultiBlocks((uint8_t *)buffer, addr,SECTOR_SIZE, nr);
 			 
 			 if(status != SD_OK)
 				 goto ERR;

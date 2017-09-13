@@ -13,7 +13,7 @@
 // 内存池的块大小
 #define	MEMPOLL_SIZE			(CAN_BUF_MAX_SIZE + (FRAME_SIZE * 2))
 #define MEMPOLL_COUNT			2
-#define	MQ_LEN						32
+#define	MQ_LEN						128
 
 // 文件最大大小
 #define	FILE_MAX_SIZE			50*1024*1024
