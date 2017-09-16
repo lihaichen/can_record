@@ -89,7 +89,7 @@ int rt_file_init()
 	rt_thread_t tid;
 	tid = rt_thread_create("file",
         rt_file_thread_entry, RT_NULL,
-        2048, 10, 20);  
+        1024, 10, 20);  
 	if (tid != RT_NULL)
 		rt_thread_startup(tid);
 	return 0;

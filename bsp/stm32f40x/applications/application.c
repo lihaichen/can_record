@@ -44,6 +44,7 @@
 
 void rt_init_thread_entry(void* parameter)
 {
+		extern void lwip_sys_init(void);
 		global.status = INIT;
 		i2c_init();
 #ifdef RT_USING_RTC
@@ -80,7 +81,12 @@ void rt_init_thread_entry(void* parameter)
 			global.status = SD_ERROR;
     }
 #endif /* RT_USING_DFS && RT_USING_DFS_ELMFAT */
-		
+#if defined(RT_USING_LWIP)		
+		lwip_sys_init();
+		eth_system_device_init();
+		rt_hw_stm32_eth_init();
+		rt_export_init();
+#endif		
 }
 
 int rt_application_init()

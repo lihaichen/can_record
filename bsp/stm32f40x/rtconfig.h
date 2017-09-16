@@ -108,7 +108,7 @@
 // #define RT_USING_DFS_ROMFS
 
 /* SECTION: lwip, a lighwight TCP/IP protocol stack */
-/* #define RT_USING_LWIP */
+#define RT_USING_LWIP 
 /* LwIP uses RT-Thread Memory Management */
 #define RT_LWIP_USING_RT_MEM
 /* Enable ICMP protocol*/
@@ -121,18 +121,20 @@
 #define RT_LWIP_DNS
 
 /* the number of simulatenously active TCP connections*/
-#define RT_LWIP_TCP_PCB_NUM	5
+#define RT_LWIP_TCP_PCB_NUM	1
+#define RT_LWIP_UDP_PCB_NUM	2
+#define RT_LWIP_RAW_PCB_NUM 2
 
 /* ip address of target*/
 #define RT_LWIP_IPADDR0	192
 #define RT_LWIP_IPADDR1	168
-#define RT_LWIP_IPADDR2	1
-#define RT_LWIP_IPADDR3	201
+#define RT_LWIP_IPADDR2	35
+#define RT_LWIP_IPADDR3	150
 
 /* gateway address of target*/
 #define RT_LWIP_GWADDR0	192
 #define RT_LWIP_GWADDR1	168
-#define RT_LWIP_GWADDR2	1
+#define RT_LWIP_GWADDR2	35
 #define RT_LWIP_GWADDR3	1
 
 /* mask address of target*/

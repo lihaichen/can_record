@@ -83,7 +83,7 @@ int rt_can2_init()
 
     tid = rt_thread_create("can2",
         rt_can2_thread_entry, RT_NULL,
-        2048, 5, 50);
+        1024, 5, 50);
 
     if (tid != RT_NULL)
         rt_thread_startup(tid);

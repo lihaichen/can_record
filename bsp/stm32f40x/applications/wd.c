@@ -45,7 +45,7 @@ int rt_wd_init()
 
     tid = rt_thread_create("wd",
         rt_wd_thread_entry, RT_NULL,
-        1024, RT_THREAD_PRIORITY_MAX-1, 10);
+        512, RT_THREAD_PRIORITY_MAX-1, 10);
 
     if (tid != RT_NULL)
         rt_thread_startup(tid);

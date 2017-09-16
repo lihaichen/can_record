@@ -110,4 +110,6 @@ extern int rt_file_init(void);
 extern void can_send_test(CAN_TypeDef* CANx,unsigned int data);
 // 看门狗线程
 extern int rt_wd_init(void);
+// 导出线程
+extern int rt_export_init(void);
 #endif

@@ -34,7 +34,7 @@
 
 /* STM32F ETH dirver options */
 #define RMII_MODE                       /* MII_MODE or RMII_MODE */
-#define RMII_TX_GPIO_GROUP        2     /* 1:GPIOB or 2:GPIOG */
+#define RMII_TX_GPIO_GROUP        1     /* 1:GPIOB or 2:GPIOG */
 #define CHECKSUM_BY_HARDWARE
 
 /** @addtogroup STM32F4XX_ETH_Driver
@@ -3248,9 +3248,9 @@ uint32_t ETH_HandlePTPRxPkt(uint8_t *ppkt, uint32_t *PTPRxTab)
 #include "lwipopts.h"
 
 /* debug option */
-//#define ETH_DEBUG
-//#define ETH_RX_DUMP
-//#define ETH_TX_DUMP
+// #define ETH_DEBUG
+// #define ETH_RX_DUMP
+// #define ETH_TX_DUMP
 
 #ifdef ETH_DEBUG
 #define STM32_ETH_PRINTF          rt_kprintf
@@ -3865,16 +3865,19 @@ static void phy_monitor_thread_entry(void *parameter)
     {
         rt_uint32_t i;
         rt_uint16_t temp;
-
+			rt_thread_delay(RT_TICK_PER_SECOND>>2);
         for(i=0; i<=0x1F; i++)
         {
-            temp = ETH_ReadPHYRegister(i, 0x02);
-
-            if( temp != 0xFFFF )
-            {
-                phy_addr = i;
-                break;
-            }
+					  
+					ETH_WritePHYRegister(i, PHY_BCR, PHY_Reset);
+					rt_thread_delay(RT_TICK_PER_SECOND>>2);
+					temp = ETH_ReadPHYRegister(i, 0x02);
+					STM32_ETH_PRINTF("ETH_ReadPHYRegister 0x02 address:0x%02X value:0x%02X\r\n", i,temp);
+					if( temp != 0xFFFF )
+					{
+						phy_addr = i;
+						break;
+					}
         }
     } /* phy search */
 
@@ -3885,7 +3888,7 @@ static void phy_monitor_thread_entry(void *parameter)
     }
     else
     {
-        STM32_ETH_PRINTF("found a phy, address:0x%02X\r\n", phy_addr);
+			STM32_ETH_PRINTF("found a phy, address:0x%02X\r\n", phy_addr);
     }
 
     /* RESET PHY */
@@ -3905,20 +3908,24 @@ static void phy_monitor_thread_entry(void *parameter)
         {
             uint16_t SR;
 
-            SR = ETH_ReadPHYRegister(phy_addr, 31);
-            STM32_ETH_PRINTF("LAN8720 REG 31:0x%04X\r\n", SR);
-
-            SR = (SR >> 2) & 0x07; /* LAN8720, REG31[4:2], Speed Indication. */
+            SR = ETH_ReadPHYRegister(phy_addr, PHY_BSR);
+            STM32_ETH_PRINTF("LAN8720 REG PHY_BSR:0x%04X\r\n", SR);
+					
             phy_speed_new = PHY_LINK_MASK;
 
-            if((SR & 0x03) == 2)
+            if(((SR >> 14) & 0x01) == 0x01)
+            {
+                phy_speed_new |= PHY_100M_MASK;
+								phy_speed_new |= PHY_DUPLEX_MASK;
+            }
+						if(((SR >> 13) & 0x01) == 0x01)
             {
                 phy_speed_new |= PHY_100M_MASK;
             }
-
-            if(SR & 0x04)
+						if(((SR >> 12) & 0x01) == 0x01)
             {
-                phy_speed_new |= PHY_DUPLEX_MASK;
+                phy_speed_new |= PHY_100M_MASK;
+								phy_speed_new |= PHY_DUPLEX_MASK;
             }
         }
 
@@ -3965,32 +3972,12 @@ static void phy_monitor_thread_entry(void *parameter)
             phy_speed = phy_speed_new;
         } /* linkchange */
 
-        rt_thread_delay(RT_TICK_PER_SECOND);
+        rt_thread_delay(RT_TICK_PER_SECOND << 3);
     } /* while(1) */
 }
 
 void rt_hw_stm32_eth_init(void)
 {
-    /* PHY RESET: PC0 */
-    {
-        GPIO_InitTypeDef GPIO_InitStructure;
-
-        GPIO_InitStructure.GPIO_Mode  = GPIO_Mode_OUT;
-        GPIO_InitStructure.GPIO_Speed = GPIO_Speed_2MHz;
-        GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
-        GPIO_InitStructure.GPIO_PuPd  = GPIO_PuPd_NOPULL;
-
-        RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOC, ENABLE);
-
-        GPIO_InitStructure.GPIO_Pin = GPIO_Pin_0;
-        GPIO_Init(GPIOC, &GPIO_InitStructure);
-
-        GPIO_ResetBits(GPIOC, GPIO_Pin_0);
-        rt_thread_delay(2);
-        GPIO_SetBits(GPIOC, GPIO_Pin_0);
-        rt_thread_delay(2);
-    }
-
     GPIO_Configuration();
     NVIC_Configuration();
 
