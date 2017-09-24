@@ -86,7 +86,8 @@ void rt_init_thread_entry(void* parameter)
 		eth_system_device_init();
 		rt_hw_stm32_eth_init();
 		rt_export_init();
-#endif		
+#endif			
+		read_filter_id();
 }
 
 int rt_application_init()

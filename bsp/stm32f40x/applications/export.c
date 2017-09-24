@@ -117,8 +117,51 @@ static int process_json(char* buf)
 		}
 			break;
 		case SET_ID:
+		{
+			int sum = 0, i = 0, fd = 0;
+			if(!cJSON_IsArray(recv_body))
+			{
+				cJSON_AddItemToObject(send_root, "status", cJSON_CreateNumber(403));
+				goto RETURN;
+			}
+			sum = cJSON_GetArraySize(recv_body);
+			sum = sum > FILTER_ID_SIZE ? FILTER_ID_SIZE : sum;
+			// 清空全部的id
+			for(i = 0; i < FILTER_ID_SIZE; i++)
+			{
+				global.filter_id[i] = -1;
+			}
+			for(i = 0; i < sum; i++)
+			{
+				global.filter_id[i] = cJSON_GetArrayItem(recv_body, i)->valueint;
+			}	
+			fd = open(FILTER_ID_FILE,O_WRONLY | O_CREAT,0);
+			if(fd < 0)
+			{
+				cJSON_AddItemToObject(send_root, "status", cJSON_CreateNumber(501));
+				goto RETURN;
+			}
+			write(fd,global.filter_id,sizeof(global.filter_id));
+			close(fd);
+			cJSON_AddItemToObject(send_root, "status", cJSON_CreateNumber(200));
+			cJSON_AddItemToObject(send_root, "body", cJSON_CreateObject());
+		}
 			break;
 		case GET_ID:
+		{
+			int i = 0;
+			cJSON_AddItemToObject(send_root, "body", send_body = cJSON_CreateArray());
+			for(i = 0; i < FILTER_ID_SIZE; i++)
+			{
+				
+				if(global.filter_id[i] < 0)
+				{
+					break;
+				}
+				cJSON_AddItemToArray(send_body,cJSON_CreateNumber(global.filter_id[i]));
+			}
+			cJSON_AddItemToObject(send_root, "status", cJSON_CreateNumber(200));
+		}
 			break;
 		case RM_FILE:
 		{
@@ -136,6 +179,7 @@ static int process_json(char* buf)
 				unlink(tmp);
 			}
 			cJSON_AddItemToObject(send_root, "status", cJSON_CreateNumber(200));
+			cJSON_AddItemToObject(send_root, "body", cJSON_CreateObject());
 		}
 			break;
 		case ERASE:

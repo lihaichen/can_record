@@ -1,8 +1,27 @@
 #include "common.h"
 #include <stdio.h>
+#include <dfs_posix.h>
 #include <time.h> 
 #include "us.h"
 global_t global;
+
+int read_filter_id()
+{
+	int fd = 0, i = 0;
+	for(i = 0; i < FILTER_ID_SIZE; i++)
+	{
+		global.filter_id[i] = -1;
+	}
+	fd = open(FILTER_ID_FILE,O_RDONLY,0);
+	if(fd < 0)
+	{
+		rt_kprintf("open file[%s] error\n", FILTER_ID_FILE);
+		return -1;
+	}
+	read(fd,global.filter_id,sizeof(global.filter_id));
+	close(fd);
+	return 0;
+}
 
 rt_err_t mempool_init()
 {

@@ -26,7 +26,8 @@
 
 // 不够64字节是否填充
 #define CAN_FILL					1
-
+#define FILTER_ID_SIZE 		16
+#define FILTER_ID_FILE		"/can_id"
 // 运行状态机
 typedef enum 
 {
@@ -83,6 +84,7 @@ typedef struct
 	frame_info_t frame_info[2];
 	// 文件长度
 	unsigned int file_len[2];
+	int filter_id[FILTER_ID_SIZE];
 }global_t;
 
 
@@ -112,4 +114,6 @@ extern void can_send_test(CAN_TypeDef* CANx,unsigned int data);
 extern int rt_wd_init(void);
 // 导出线程
 extern int rt_export_init(void);
+// 读取过滤的id
+extern int read_filter_id(void);
 #endif
