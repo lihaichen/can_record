@@ -96,6 +96,22 @@ static int process_json(char* buf)
 		case GET_ID:
 			break;
 		case RM_FILE:
+		{
+			int rm_sum = 0, i = 0;
+			if(!cJSON_IsArray(recv_body))
+			{
+				cJSON_AddItemToObject(send_root, "status", cJSON_CreateNumber(403));
+				goto RETURN;
+			}
+			rm_sum = cJSON_GetArraySize(recv_body);
+			for(i = 0; i < rm_sum; i++)
+			{
+				rt_memset(tmp,0,sizeof(tmp));
+				snprintf(tmp,sizeof(tmp)-1,"/%s",cJSON_GetArrayItem(recv_body, i)->valuestring);
+				unlink(tmp);
+			}
+			cJSON_AddItemToObject(send_root, "status", cJSON_CreateNumber(200));
+		}
 			break;
 		case ERASE:
 			break;
@@ -192,7 +208,7 @@ static int process_json(char* buf)
 				goto RETURN;
 			}
 			send_list = cJSON_CreateArray();
-			lseek(fd, (page-1)*FILE_PAGE_SIZE,SEEK_SET);
+			lseek(fd, (page-1)*FILE_PAGE_SIZE*FRAME_SIZE,SEEK_SET);
 			for(i = 0; i < FILE_PAGE_SIZE; i++)
 			{
 				rt_memset(tmp,0,sizeof(tmp));
