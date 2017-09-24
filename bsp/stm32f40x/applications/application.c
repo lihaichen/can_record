@@ -73,6 +73,7 @@ void rt_init_thread_entry(void* parameter)
 			rt_can1_init();
 			rt_can2_init();
 			rt_file_init();
+			rt_upload_init();
 			global.status = RUN;
     }
     else

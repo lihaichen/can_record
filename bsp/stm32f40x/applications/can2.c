@@ -14,7 +14,7 @@ static void rt_can2_thread_entry(void* parameter)
 	// 存储够SD卡页大小后再发送进行写入
 	static char * buf = RT_NULL;
 	// buf 数据长度
-	static int len = 0;
+	static int len = 0, i = 0;
 	// 存储的次数
 	static int save_index = 0;
 	
@@ -49,6 +49,20 @@ static void rt_can2_thread_entry(void* parameter)
 				can_msg = msg.p;
 #if CAN_FILL
 			frame_to_csv(msg.type,can_msg,buf+len);
+			for(i = 0; i < global.id_len; i++)
+			{
+				if(global.filter_id[i] == (can_msg->StdId + can_msg->ExtId))
+				{
+					char *p = (char *)rt_mp_alloc(global.mempool3,RT_WAITING_NO);
+					if(p != RT_NULL)
+					{
+						rt_memset(p,0,UART_FRAME_SIZE);
+						rt_memcpy(p,buf+len,UART_FRAME_SIZE);
+						rt_mq_send(global.uart_mq, (void *)&p, sizeof(char *));
+					}
+					break;
+				}
+			}
 			len += FRAME_SIZE;
 			if(len >= CAN_BUF_MAX_SIZE){
 					// 进行存储

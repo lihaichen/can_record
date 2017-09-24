@@ -8,6 +8,9 @@
 // 不够64字节，补0,为扇区的整数倍
 #define FRAME_SIZE				64
 
+// 串口帧大小
+#define UART_FRAME_SIZE  (FRAME_SIZE + 4)
+
 #define	CAN_BUF_MAX_SIZE	(21*1024)
 
 // 内存池的块大小
@@ -28,6 +31,7 @@
 #define CAN_FILL					1
 #define FILTER_ID_SIZE 		16
 #define FILTER_ID_FILE		"/can_id"
+
 // 运行状态机
 typedef enum 
 {
@@ -78,12 +82,15 @@ typedef struct
 	time_t run_time;
 	struct rt_mempool mempool1;
 	struct rt_mempool *mempool2;
+	struct rt_mempool *mempool3;
 	rt_mq_t can1_mq;
 	rt_mq_t can2_mq;
 	rt_mq_t save_mq;
+	rt_mq_t uart_mq;
 	frame_info_t frame_info[2];
 	// 文件长度
 	unsigned int file_len[2];
+	int id_len ;
 	int filter_id[FILTER_ID_SIZE];
 }global_t;
 
@@ -116,4 +123,6 @@ extern int rt_wd_init(void);
 extern int rt_export_init(void);
 // 读取过滤的id
 extern int read_filter_id(void);
+// 上报线程
+extern int rt_upload_init(void);
 #endif

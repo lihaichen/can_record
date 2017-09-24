@@ -20,12 +20,21 @@ int read_filter_id()
 	}
 	read(fd,global.filter_id,sizeof(global.filter_id));
 	close(fd);
+	for(i = 0;i < FILTER_ID_SIZE;i ++)
+	{
+		if(global.filter_id[i] == -1)
+		{
+			global.id_len = i;
+			break;
+		}
+	}
 	return 0;
 }
 
 rt_err_t mempool_init()
 {
 	global.mempool2 = rt_mp_create("mp2", MEMPOLL_COUNT, MEMPOLL_SIZE);
+	global.mempool3 = rt_mp_create("mp3", MQ_LEN, UART_FRAME_SIZE);
 	return rt_mp_init(&global.mempool1, "mp1",(void *)0x10000000, 0x10000, MEMPOLL_SIZE);
 }
 
@@ -34,7 +43,9 @@ rt_err_t messagequeue_init()
 	global.can1_mq = rt_mq_create("can1", sizeof(msg_t), MQ_LEN, RT_IPC_FLAG_FIFO);
 	global.can2_mq = rt_mq_create("can2", sizeof(msg_t), MQ_LEN, RT_IPC_FLAG_FIFO);
 	global.save_mq = rt_mq_create("save", sizeof(msg_t), MQ_LEN, RT_IPC_FLAG_FIFO);
-	if(global.can1_mq == RT_NULL || global.can1_mq == RT_NULL || global.can1_mq == RT_NULL)
+	global.uart_mq = rt_mq_create("uart", sizeof(msg_t), MQ_LEN, RT_IPC_FLAG_FIFO);
+	if(global.can1_mq == RT_NULL || global.can1_mq == RT_NULL 
+		|| global.can1_mq == RT_NULL || global.uart_mq == RT_NULL)
 		return RT_ERROR;
 	return RT_EOK;
 }

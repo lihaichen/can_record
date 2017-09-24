@@ -371,7 +371,7 @@ int rt_export_init()
 
     tid = rt_thread_create("export",
         rt_export_thread_entry, RT_NULL,
-        1024, 5, 50);
+        1024, 10, 20);
 
     if (tid != RT_NULL)
         rt_thread_startup(tid);
