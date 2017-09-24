@@ -6,6 +6,7 @@
 #include <lwip/sys.h>
 #include <lwip/api.h>
 #include <dfs_posix.h>
+#include <time.h>
 #include "cJSON.h"
 #include "export.h"
 #include "common.h"
@@ -88,8 +89,32 @@ static int process_json(char* buf)
 			cJSON_AddItemToObject(send_root, "body", cJSON_CreateString("pong"));
 			break;
 		case SET_TIME:
+		{ 
+			rt_device_t device;
+			time_t time;
+			if(!cJSON_IsNumber(recv_body))
+			{
+				cJSON_AddItemToObject(send_root, "status", cJSON_CreateNumber(403));
+				goto RETURN;
+			}
+			 
+			device = rt_device_find("rtc");
+			if (device == RT_NULL)
+			{
+        cJSON_AddItemToObject(send_root, "status", cJSON_CreateNumber(501));
+				goto RETURN;
+			}
+			time = recv_body->valueint;
+			rt_device_control(device, RT_DEVICE_CTRL_RTC_SET_TIME, &time);
+			cJSON_AddItemToObject(send_root, "status", cJSON_CreateNumber(200));
+			cJSON_AddItemToObject(send_root, "body", cJSON_CreateObject());
+		}
 			break;
 		case GET_TIME:
+		{
+			cJSON_AddItemToObject(send_root, "status", cJSON_CreateNumber(200));
+			cJSON_AddItemToObject(send_root, "body", cJSON_CreateNumber(time(RT_NULL)));
+		}
 			break;
 		case SET_ID:
 			break;
@@ -114,6 +139,11 @@ static int process_json(char* buf)
 		}
 			break;
 		case ERASE:
+		{
+			dfs_mkfs("elm","sd0");
+			cJSON_AddItemToObject(send_root, "status", cJSON_CreateNumber(200));
+			cJSON_AddItemToObject(send_root, "body", cJSON_CreateObject());
+		}
 			break;
 		case READ_LIST:
 		{
