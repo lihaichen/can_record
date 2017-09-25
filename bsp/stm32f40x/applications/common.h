@@ -12,14 +12,14 @@
 
 // 内存池的块大小
 #define	MEMPOLL_SIZE			(CAN_BUF_MAX_SIZE + (FRAME_SIZE * 2))
-#define MEMPOLL_COUNT			2
+#define MEMPOLL_COUNT			3
 #define	MQ_LEN						128
 
 // 文件最大大小
 #define	FILE_MAX_SIZE			50*1024*1024
 
 // can默认速率
-#define	CAN_DEFAULT_BPS		(250*1000)
+#define	CAN_DEFAULT_BPS		(1000*1000)
 
 // can 空闲时间进行存储
 #define IDLE_SAVE					RT_TICK_PER_SECOND/2

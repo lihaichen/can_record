@@ -306,7 +306,6 @@ static rt_size_t rt_sdcard_read(rt_device_t dev, rt_off_t pos, void* buffer, rt_
 	SD_Error status;
 	SDTransferState Tr_status;
 	rt_uint32_t nr = size;
-	rt_uint32_t count = size << 2;
 	uint64_t addr = ((uint64_t)(part.offset + pos) * SECTOR_SIZE);
 	rt_sem_take(&sd_lock, RT_WAITING_FOREVER);
 
@@ -318,14 +317,7 @@ static rt_size_t rt_sdcard_read(rt_device_t dev, rt_off_t pos, void* buffer, rt_
 			 status = SD_WaitReadOperation();
 			 if(status != SD_OK)
 				 goto ERR;
-			 for(;count>0;count--)
-			 {
-					Tr_status = SD_GetStatus();
-					if(Tr_status == SD_TRANSFER_OK)
-							break;
-					else
-						rt_thread_delay(1);
-			 }
+		 while((Tr_status = SD_GetStatus()) == SD_TRANSFER_BUSY); 
    }
    else
    {
@@ -335,15 +327,7 @@ static rt_size_t rt_sdcard_read(rt_device_t dev, rt_off_t pos, void* buffer, rt_
 			 status = SD_WaitReadOperation();
 			 if(status != SD_OK)
 				 goto ERR;
-			 for(;count>0;count--)
-			 {
-					Tr_status = SD_GetStatus();
-					if(Tr_status == SD_TRANSFER_OK)
-							break;
-					else
-						rt_thread_delay(1);
-			 }
-					 
+			 while((Tr_status = SD_GetStatus()) == SD_TRANSFER_BUSY); 
    }
 		if(Tr_status == SD_TRANSFER_OK)
 		{
@@ -361,11 +345,9 @@ static rt_size_t rt_sdcard_write (rt_device_t dev, rt_off_t pos, const void* buf
 	SD_Error status;
 	SDTransferState Tr_status;
 	rt_uint32_t nr = size;
-	rt_uint32_t count = size << 4;
 	uint64_t addr = ((uint64_t)(part.offset + pos) * SECTOR_SIZE);
 	rt_sem_take(&sd_lock, RT_WAITING_FOREVER);
-
-   if (nr == 1)
+  if (nr == 1)
    {
       status = SD_WriteBlock((uint8_t *)buffer,addr, SECTOR_SIZE);
 			if(status != SD_OK)
@@ -373,14 +355,8 @@ static rt_size_t rt_sdcard_write (rt_device_t dev, rt_off_t pos, const void* buf
 			 status = SD_WaitWriteOperation();
 			 if(status != SD_OK)
 				 goto ERR;
-			 for(;count>0;count--)
-			 {
-					Tr_status = SD_GetStatus();
-					if(Tr_status == SD_TRANSFER_OK)
-							break;
-					else
-						rt_thread_delay(1);
-				}
+			 
+			 while((Tr_status = SD_GetStatus()) == SD_TRANSFER_BUSY); 
    }
    else
    {
@@ -391,22 +367,13 @@ static rt_size_t rt_sdcard_write (rt_device_t dev, rt_off_t pos, const void* buf
 			 status = SD_WaitWriteOperation();
 			 if(status != SD_OK)
 				 goto ERR;
-			 for(;count>0;count--)
-			 {
-					Tr_status = SD_GetStatus();
-					if(Tr_status == SD_TRANSFER_OK)
-							break;
-					else
-						rt_thread_delay(1);
-			 }
+			 while((Tr_status = SD_GetStatus()) == SD_TRANSFER_BUSY); 
 		}
-		
 		if(Tr_status == SD_TRANSFER_OK)
 		{
 			rt_sem_release(&sd_lock);
 			return size;
 		}
-	 
 ERR:
 	rt_sem_release(&sd_lock);
 	rt_kprintf("write failed: %d, buffer 0x%08x\n", status, buffer);
