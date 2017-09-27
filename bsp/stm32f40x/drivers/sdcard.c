@@ -318,14 +318,7 @@ static rt_size_t rt_sdcard_read(rt_device_t dev, rt_off_t pos, void* buffer, rt_
 			 status = SD_WaitReadOperation();
 			 if(status != SD_OK)
 				 goto ERR;
-			 for(;count>0;count--)
-			 {
-					Tr_status = SD_GetStatus();
-					if(Tr_status == SD_TRANSFER_OK)
-							break;
-					else
-						rt_thread_delay(1);
-			 }
+			 while((Tr_status = SD_GetStatus()) == SD_TRANSFER_BUSY);
    }
    else
    {
@@ -335,15 +328,7 @@ static rt_size_t rt_sdcard_read(rt_device_t dev, rt_off_t pos, void* buffer, rt_
 			 status = SD_WaitReadOperation();
 			 if(status != SD_OK)
 				 goto ERR;
-			 for(;count>0;count--)
-			 {
-					Tr_status = SD_GetStatus();
-					if(Tr_status == SD_TRANSFER_OK)
-							break;
-					else
-						rt_thread_delay(1);
-			 }
-					 
+			 while((Tr_status = SD_GetStatus()) == SD_TRANSFER_BUSY);
    }
 		if(Tr_status == SD_TRANSFER_OK)
 		{
@@ -373,14 +358,7 @@ static rt_size_t rt_sdcard_write (rt_device_t dev, rt_off_t pos, const void* buf
 			 status = SD_WaitWriteOperation();
 			 if(status != SD_OK)
 				 goto ERR;
-			 for(;count>0;count--)
-			 {
-					Tr_status = SD_GetStatus();
-					if(Tr_status == SD_TRANSFER_OK)
-							break;
-					else
-						rt_thread_delay(1);
-				}
+			while((Tr_status = SD_GetStatus()) == SD_TRANSFER_BUSY);
    }
    else
    {
@@ -391,14 +369,7 @@ static rt_size_t rt_sdcard_write (rt_device_t dev, rt_off_t pos, const void* buf
 			 status = SD_WaitWriteOperation();
 			 if(status != SD_OK)
 				 goto ERR;
-			 for(;count>0;count--)
-			 {
-					Tr_status = SD_GetStatus();
-					if(Tr_status == SD_TRANSFER_OK)
-							break;
-					else
-						rt_thread_delay(1);
-			 }
+			while((Tr_status = SD_GetStatus()) == SD_TRANSFER_BUSY);
 		}
 		
 		if(Tr_status == SD_TRANSFER_OK)

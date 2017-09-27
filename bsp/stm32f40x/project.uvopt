@@ -387,10 +387,10 @@
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <Focus>0</Focus>
-      <ColumnNumber>24</ColumnNumber>
+      <ColumnNumber>22</ColumnNumber>
       <tvExpOptDlg>0</tvExpOptDlg>
-      <TopLine>3271</TopLine>
-      <CurrentLine>3290</CurrentLine>
+      <TopLine>3397</TopLine>
+      <CurrentLine>3408</CurrentLine>
       <bDave2>0</bDave2>
       <PathWithFileName>drivers\stm32f4xx_eth.c</PathWithFileName>
       <FilenameWithoutPath>stm32f4xx_eth.c</FilenameWithoutPath>
@@ -419,10 +419,10 @@
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <Focus>0</Focus>
-      <ColumnNumber>0</ColumnNumber>
+      <ColumnNumber>25</ColumnNumber>
       <tvExpOptDlg>0</tvExpOptDlg>
-      <TopLine>0</TopLine>
-      <CurrentLine>0</CurrentLine>
+      <TopLine>442</TopLine>
+      <CurrentLine>456</CurrentLine>
       <bDave2>0</bDave2>
       <PathWithFileName>drivers\sdcard.c</PathWithFileName>
       <FilenameWithoutPath>sdcard.c</FilenameWithoutPath>
