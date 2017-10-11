@@ -13,7 +13,7 @@
 
 #define	BUF_SIZE 			 2048
 #define PAGE_SIZE 		 10
-#define FILE_PAGE_SIZE 15
+#define FILE_PAGE_SIZE 18
 // 支持的命令列表
 typedef enum 
 {
