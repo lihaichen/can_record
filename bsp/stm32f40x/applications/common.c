@@ -304,6 +304,27 @@ int frame_to_csv(msg_type_t type, CanRxMsg *can_msg, char* buf)
 					frame_type,can_msg->StdId + can_msg->ExtId,can_msg->DLC%10,tmp);
 }
 
+#if USE_TIMESTAMPE
+void calc_timestampe(timestamp_t *t)
+{
+	int finish_time = 0;
+	finish_time = get_us_timer() - t->start;
+	if(finish_time <0)
+	{
+		finish_time += 1000000;
+	}
+	// finish_time = finish_time > 0 ? finish_time: finish_time + 1000000;
+	if(t->min > finish_time || t->min == 0)
+		t->min = finish_time;
+	if(t->max < finish_time)
+		t->max = finish_time;
+	if(t->avg == 0)
+		t->avg = finish_time;
+	else 
+		t->avg = (t->avg + finish_time)/2;
+}
+#endif
+
 #ifdef RT_USING_FINSH
 #include "finsh.h"
 void show_frame(void)
@@ -317,4 +338,16 @@ void show_frame(void)
 	}
 }
 FINSH_FUNCTION_EXPORT(show_frame, show can frame info.)
+#if USE_TIMESTAMPE
+void show_timestampe(void)
+{
+	rt_kprintf("can0 ==> min[%d] avg[%d] max[%d]\n", global.timestamp[0].min, 
+	global.timestamp[0].avg,global.timestamp[0].max);
+	rt_kprintf("can1 ==> min[%d] avg[%d] max[%d]\n", global.timestamp[1].min, 
+	global.timestamp[1].avg,global.timestamp[1].max);
+	rt_kprintf("save ==> min[%d] avg[%d] max[%d]\n", global.timestamp[2].min, 
+	global.timestamp[2].avg,global.timestamp[2].max);
+}
+FINSH_FUNCTION_EXPORT(show_timestampe, show  timestampe info.)
+#endif
 #endif

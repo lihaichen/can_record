@@ -22,7 +22,7 @@
 #define	FILE_MAX_SIZE			50*1024*1024
 
 // can默认速率
-#define	CAN_DEFAULT_BPS		(250*1000)
+#define	CAN_DEFAULT_BPS		(1000*1000)
 
 // can 空闲时间进行存储
 #define IDLE_SAVE					RT_TICK_PER_SECOND/2
@@ -31,6 +31,9 @@
 #define CAN_FILL					1
 #define FILTER_ID_SIZE 		16
 #define FILTER_ID_FILE		"/can_id"
+
+// 是否使用时间采样统计
+#define USE_TIMESTAMPE		1
 
 // 运行状态机
 typedef enum 
@@ -61,6 +64,9 @@ typedef struct
 	msg_type_t type;
 	unsigned int value;
 	void *p;
+#if USE_TIMESTAMPE
+	int timestamp;
+#endif
 	unsigned int reserve;
 }msg_t;
 
@@ -71,6 +77,16 @@ typedef struct
 	unsigned int ERF;
 	unsigned int EDF;
 }frame_info_t;
+
+#if USE_TIMESTAMPE
+typedef struct 
+{
+	 int start;
+	 int max;
+	 int min;
+	 int avg;
+}timestamp_t;
+#endif
 
 // 全局接口
 typedef struct 
@@ -87,10 +103,18 @@ typedef struct
 	rt_mq_t can2_mq;
 	rt_mq_t save_mq;
 	rt_mq_t uart_mq;
+	// 帧信息统计
 	frame_info_t frame_info[2];
+#if USE_TIMESTAMPE	
+	// 时间戳统计
+	// can1 can2 save
+	timestamp_t timestamp[3];
+#endif	
 	// 文件长度
 	unsigned int file_len[2];
+	// 关注id的长度
 	int id_len ;
+	// 关注id的值
 	int filter_id[FILTER_ID_SIZE];
 }global_t;
 
@@ -125,4 +149,8 @@ extern int rt_export_init(void);
 extern int read_filter_id(void);
 // 上报线程
 extern int rt_upload_init(void);
+// 时间戳计算
+#if USE_TIMESTAMPE
+extern void calc_timestampe(timestamp_t *t);
+#endif
 #endif

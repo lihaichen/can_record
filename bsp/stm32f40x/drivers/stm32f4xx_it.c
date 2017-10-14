@@ -27,6 +27,7 @@
 
 #include "board.h"
 #include "common.h"
+#include "us.h"
 /** @addtogroup STM32F4_Discovery_Peripheral_Examples
   * @{
   */
@@ -144,6 +145,9 @@ void CAN1_RX0_IRQHandler(void){
 	static int i = 0;
 	rt_memset(&msg,0,sizeof(msg_t));
 	rt_memset(&can_msg[i],0,sizeof(CanRxMsg));
+#if USE_TIMESTAMPE
+	msg.timestamp = get_us_timer();
+#endif		
 	CAN_Receive(CAN1, CAN_FIFO0, &can_msg[i]);
 	msg.type = CAN1_RECV;
 	msg.p = (void *)&can_msg[i];
@@ -161,6 +165,9 @@ void CAN2_RX0_IRQHandler(void){
 	static int i = 0;
 	rt_memset(&msg,0,sizeof(msg_t));
 	rt_memset(&can_msg[i],0,sizeof(CanRxMsg));
+#if USE_TIMESTAMPE
+	msg.timestamp = get_us_timer();
+#endif	
 	CAN_Receive(CAN2, CAN_FIFO0, &can_msg[i]);
 	msg.type = CAN2_RECV;
 	msg.p = (void *)&can_msg[i];

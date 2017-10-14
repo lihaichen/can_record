@@ -1,6 +1,7 @@
 #include <board.h>
 #include <rtthread.h>
 #include "common.h"
+#include "us.h"
 #include <drivers/pin.h>
 
 #define CAN_FILTER_CHANNEL	0
@@ -28,7 +29,7 @@ static void rt_can1_thread_entry(void* parameter)
 		if(rt_mq_recv (global.can1_mq, &msg,sizeof(msg_t),  IDLE_SAVE) != RT_EOK)
 		{
 			if(len > 0)
-			{
+			{		
 				buf = send_save_msg(CAN1_SAVE,buf,len,save_index);
 				len = 0;
 				save_index ++;
@@ -64,15 +65,15 @@ static void rt_can1_thread_entry(void* parameter)
 				}
 			}
 			len += FRAME_SIZE;
-			if(len >= CAN_BUF_MAX_SIZE){
-					// 进行存储
-					buf = send_save_msg(CAN1_SAVE,buf,len,save_index);
-					len = 0;
-					save_index ++;
+			if(len >= CAN_BUF_MAX_SIZE) {
+				// 进行存储	
+				buf = send_save_msg(CAN1_SAVE,buf,len,save_index);
+				len = 0;
+				save_index ++;
 			}
 #else
 			len += frame_to_csv(msg.type,can_msg,buf+len);
-			if(len >= CAN_BUF_MAX_SIZE){
+			if(len >= CAN_BUF_MAX_SIZE) {
 					// 进行存储
 					static char last_buf[FRAME_SIZE << 1];
 					rt_memset(last_buf,0,sizeof(last_buf));
@@ -84,6 +85,10 @@ static void rt_can1_thread_entry(void* parameter)
 				}
 #endif			
 				rt_pin_write(1,1);
+#if USE_TIMESTAMPE
+				global.timestamp[0].start = msg.timestamp;				
+				calc_timestampe(&global.timestamp[0]);
+#endif							
 				break;
 			default:
 				break;

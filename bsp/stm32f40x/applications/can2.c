@@ -1,6 +1,7 @@
 #include <board.h>
 #include <rtthread.h>
 #include "common.h"
+#include "us.h"
 #include <drivers/pin.h>
 
 #define CAN_FILTER_CHANNEL	14
@@ -84,6 +85,10 @@ static void rt_can2_thread_entry(void* parameter)
 				}
 #endif			
 				rt_pin_write(3,1);
+#if USE_TIMESTAMPE		
+				global.timestamp[1].start = msg.timestamp;
+				calc_timestampe(&global.timestamp[1]);
+#endif
 				break;
 			default:
 				break;
