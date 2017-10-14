@@ -209,7 +209,7 @@ void can_send_test(CAN_TypeDef* CANx,unsigned int data)
 
 
 // 发送一个存储信息，返回一个新的内存块
-char * send_save_msg(msg_type_t type,void *buf,int len,int save_index)
+char * send_save_msg(msg_type_t type,void *buf,int len,int timestamp)
 {
 	msg_t send_msg;		
 	char * result = RT_NULL;
@@ -217,7 +217,9 @@ char * send_save_msg(msg_type_t type,void *buf,int len,int save_index)
 	send_msg.type = type;
 	send_msg.value = len;
 	send_msg.p = buf;
-	send_msg.reserve = save_index;
+#if USE_TIMESTAMPE	
+	send_msg.timestamp = timestamp;
+#endif	
 	rt_mq_send(global.save_mq, &send_msg, sizeof(msg_t));
 	switch(type)
 	{
@@ -231,7 +233,6 @@ char * send_save_msg(msg_type_t type,void *buf,int len,int save_index)
 			break;
 	}
 	rt_memset(result,0,MEMPOLL_SIZE);
-	// rt_kprintf("c>%d-%d-%d\n",type,len,save_index);
 	return result;
 }
 // 将can数据解析存储buf，格式为csv
@@ -309,11 +310,7 @@ void calc_timestampe(timestamp_t *t)
 {
 	int finish_time = 0;
 	finish_time = get_us_timer() - t->start;
-	if(finish_time <0)
-	{
-		finish_time += 1000000;
-	}
-	// finish_time = finish_time > 0 ? finish_time: finish_time + 1000000;
+	finish_time = finish_time > 0 ? finish_time: finish_time + 1000000;
 	if(t->min > finish_time || t->min == 0)
 		t->min = finish_time;
 	if(t->max < finish_time)

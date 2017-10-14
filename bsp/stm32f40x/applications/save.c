@@ -50,13 +50,17 @@ void rt_file_thread_entry(void* parameter)
 			rt_thread_delay(2);
 			continue;
 		}
-		// rt_kprintf("s>%d-%d-%d\n",msg.type,msg.value,msg.reserve);
+#if USE_TIMESTAMPE	
+		global.timestamp[2].start = msg.timestamp;
+		calc_timestampe(&global.timestamp[2]);
+#endif
 		switch(msg.type)
 		{
 			case CAN1_SAVE:
 				rt_pin_write(2,0);
 				rt_memset(buf,0,MEMPOLL_SIZE);
 				rt_memcpy(buf,msg.p,msg.value);
+			
 				rt_mp_free(msg.p);
 				save(file_name[0],buf,msg.value);
 				global.file_len[0] += msg.value;
@@ -64,7 +68,7 @@ void rt_file_thread_entry(void* parameter)
 					global.file_len[0] = 0;
 					new_file(file_name[0],"/CH1");
 				}		
-				rt_pin_write(2,1);
+				rt_pin_write(2,1);				
 				break;
 			case CAN2_SAVE:
 				rt_pin_write(4,0);

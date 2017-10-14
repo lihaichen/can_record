@@ -131,7 +131,7 @@ extern rt_err_t messagequeue_init(void);
 extern void hex_2_str(const char *src,  char *dest, int len );
 
 // 发送一个存储信息，返回一个新的内存块
-extern char * send_save_msg(msg_type_t type,void *buf,int len,int save_index);
+extern char * send_save_msg(msg_type_t type,void *buf,int len,int timestamp);
 
 // 将can数据解析存储buf，格式为csv
 extern int frame_to_csv(msg_type_t type, CanRxMsg *can_msg, char* buf);

@@ -16,8 +16,6 @@ static void rt_can2_thread_entry(void* parameter)
 	static char * buf = RT_NULL;
 	// buf 数据长度
 	static int len = 0, i = 0;
-	// 存储的次数
-	static int save_index = 0;
 	
 	rt_kprintf("can2 thread start...\n");
 	can_init(CAN2,CAN_DEFAULT_BPS);
@@ -30,9 +28,8 @@ static void rt_can2_thread_entry(void* parameter)
 		{
 			if(len > 0)
 			{
-				buf = send_save_msg(CAN2_SAVE,buf,len,save_index);
+				buf = send_save_msg(CAN2_SAVE,buf,len,get_us_timer());
 				len = 0;
-				save_index ++;
 			}
 			continue;
 		}
@@ -67,9 +64,8 @@ static void rt_can2_thread_entry(void* parameter)
 			len += FRAME_SIZE;
 			if(len >= CAN_BUF_MAX_SIZE){
 					// 进行存储
-					buf = send_save_msg(CAN2_SAVE,buf,len,save_index);
+					buf = send_save_msg(CAN2_SAVE,buf,len,get_us_timer());
 					len = 0;
-					save_index ++;
 			}
 #else
 			len += frame_to_csv(msg.type,can_msg,buf+len);
@@ -79,9 +75,8 @@ static void rt_can2_thread_entry(void* parameter)
 					rt_memset(last_buf,0,sizeof(last_buf));
 					len = len - CAN_BUF_MAX_SIZE;
 					rt_memcpy(last_buf,buf+CAN_BUF_MAX_SIZE,len);
-					buf = send_save_msg(CAN2_SAVE,buf,CAN_BUF_MAX_SIZE,save_index);
+					buf = send_save_msg(CAN2_SAVE,buf,CAN_BUF_MAX_SIZE,get_us_timer());
 					rt_memcpy(buf,last_buf,len);
-					save_index ++;
 				}
 #endif			
 				rt_pin_write(3,1);
