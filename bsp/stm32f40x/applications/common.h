@@ -85,6 +85,8 @@ typedef struct
 	 int max;
 	 int min;
 	 int avg;
+	 // 数量
+	 unsigned int sum;
 }timestamp_t;
 #endif
 

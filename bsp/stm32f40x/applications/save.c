@@ -52,7 +52,6 @@ void rt_file_thread_entry(void* parameter)
 		}
 #if USE_TIMESTAMPE	
 		global.timestamp[2].start = msg.timestamp;
-		calc_timestampe(&global.timestamp[2]);
 #endif
 		switch(msg.type)
 		{
@@ -86,6 +85,9 @@ void rt_file_thread_entry(void* parameter)
 			default:
 				break;
 		}
+#if USE_TIMESTAMPE	
+		calc_timestampe(&global.timestamp[2]);
+#endif
 	}
 }
 int rt_file_init()
