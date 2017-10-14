@@ -239,7 +239,6 @@ void can_send_test(CAN_TypeDef* CANx,unsigned int data)
 	CAN_Transmit(CANx, &TxMessage);	
 }
 
-
 // 发送一个存储信息，返回一个新的内存块
 char * send_save_msg(msg_type_t type,void *buf,int len,int timestamp)
 {
@@ -267,6 +266,131 @@ char * send_save_msg(msg_type_t type,void *buf,int len,int timestamp)
 	rt_memset(result,0,MEMPOLL_SIZE);
 	return result;
 }
+#if 1
+int frame_to_csv(msg_type_t type, CanRxMsg *can_msg, char* buf)
+{
+	int us = get_us_timer();
+	int can_index = 0;
+	int frame_len = 0;
+	// 帧类型
+	char *frame_type = RT_NULL;
+	// can 数据长度
+	char can_data_len = can_msg->DLC%10;
+	// 帧类型
+	static char *frame_type_list[4] = {"SRF","SDF","ERF","EDF"};
+	// 时间
+	time_t timep; 
+	struct tm *tm_p; 
+	if(can_msg == RT_NULL || buf == RT_NULL)
+		return -1;
+	switch(type)
+	{
+		case CAN1_RECV:
+			can_index = 0;
+			break;
+		case CAN2_RECV:
+			can_index = 1;
+			break;
+		default:
+			return -1;
+	}
+		if(can_msg->IDE)
+	{	
+		// 扩展帧
+		if(can_msg->RTR)
+		{
+			// 远程帧
+			global.frame_info[can_index].ERF ++;
+			frame_type = frame_type_list[2];
+		}else
+		{	
+			// 数据帧
+			global.frame_info[can_index].EDF ++;
+			frame_type = frame_type_list[3];
+		}
+	}else
+	{
+		// 标准帧
+		// 扩展帧
+		if(can_msg->RTR)
+		{
+			// 远程帧
+			global.frame_info[can_index].SRF ++;
+			frame_type = frame_type_list[0];
+		}else
+		{
+			// 数据帧
+			global.frame_info[can_index].SDF ++;
+			frame_type = frame_type_list[1];
+		}
+	}
+	timep = global.power_time + global.run_time;
+	tm_p =localtime(&timep);
+	// 月份
+	rt_strncpy(buf,str_00_99[1+tm_p->tm_mon], 2);
+	frame_len += 2;
+	buf[frame_len] = '-';
+	frame_len++;
+	// 日期
+	rt_strncpy(buf + frame_len,str_00_99[tm_p->tm_mday], 2);
+	frame_len += 2;
+	buf[frame_len] = ' ';
+	frame_len++;
+	// 小时
+	rt_strncpy(buf + frame_len,str_00_99[tm_p->tm_hour], 2);
+	frame_len += 2;
+	buf[frame_len] = ':';
+	frame_len++;
+	// 分钟
+	rt_strncpy(buf + frame_len,str_00_99[tm_p->tm_min], 2);
+	frame_len += 2;
+	buf[frame_len] = ':';
+	frame_len++;
+	// 秒
+	rt_strncpy(buf + frame_len,str_00_99[tm_p->tm_sec], 2);
+	frame_len += 2;
+	buf[frame_len] = '.';
+	frame_len++;
+	// 毫秒
+	rt_sprintf(buf + frame_len,"%06d",us);
+	frame_len += 6;
+	buf[frame_len] = ',';
+	frame_len++;
+	// 类型
+	rt_strncpy(buf + frame_len,frame_type, 3);
+	frame_len += 3;
+	buf[frame_len] = ',';
+	frame_len++;
+	//ID
+	rt_sprintf(buf + frame_len,"0x%08X",can_msg->StdId + can_msg->ExtId);
+	frame_len += 10;
+	buf[frame_len] = ',';
+	frame_len++;
+	// 长度
+	buf[frame_len] = can_data_len + '0';
+	frame_len++;
+	buf[frame_len] = ',';
+	frame_len++;
+	// 数据
+	if(!can_msg->RTR)
+	{
+		int i = 0;
+		for(i = 0; i < can_data_len; i++)
+		{
+			rt_strncpy(buf + frame_len,str_00_FF[can_msg->Data[i]], 2);
+			frame_len += 2;
+			buf[frame_len] = ' ';
+			frame_len++;
+		}
+		if(i > 0)
+			frame_len--;
+	}
+	
+	buf[frame_len] = '\n';
+	frame_len++;
+	return frame_len;
+}
+#else
 // 将can数据解析存储buf，格式为csv
 int frame_to_csv(msg_type_t type, CanRxMsg *can_msg, char* buf)
 {
@@ -281,7 +405,7 @@ int frame_to_csv(msg_type_t type, CanRxMsg *can_msg, char* buf)
 	int us;
 	// 帧类型
 	static char *frame_type_list[4] = {"SRF","SDF","ERF","EDF"};
-	if(can_msg == RT_NULL)
+	if(can_msg == RT_NULL || buf == RT_NULL)
 		return -1;
 	switch(type)
 	{
@@ -336,6 +460,7 @@ int frame_to_csv(msg_type_t type, CanRxMsg *can_msg, char* buf)
 					tm_p->tm_hour, tm_p->tm_min, tm_p->tm_sec,us/100,
 					frame_type,can_msg->StdId + can_msg->ExtId,can_msg->DLC%10,tmp);
 }
+#endif
 
 #if USE_TIMESTAMPE
 void calc_timestampe(timestamp_t *t)
