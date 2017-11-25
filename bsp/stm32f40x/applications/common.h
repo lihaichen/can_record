@@ -19,7 +19,7 @@
 #define	MQ_LEN						128
 
 // 文件最大大小
-#define	FILE_MAX_SIZE			50*1024*1024
+#define	FILE_MAX_SIZE			25*1024*1024
 
 // can默认速率
 #define	CAN_DEFAULT_BPS		(1000*1000)
@@ -109,8 +109,8 @@ typedef struct
 	frame_info_t frame_info[2];
 #if USE_TIMESTAMPE	
 	// 时间戳统计
-	// can1 can2 save
-	timestamp_t timestamp[3];
+	// can1 can2 save1 save2 saveIdle
+	timestamp_t timestamp[5];
 #endif	
 	// 文件长度
 	unsigned int file_len[2];

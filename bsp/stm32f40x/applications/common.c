@@ -120,7 +120,7 @@ void can_init(CAN_TypeDef* CANx, unsigned int bps)
 		RCC_APB1PeriphClockCmd(RCC_APB1Periph_CAN1, ENABLE);
 		NVIC_PriorityGroupConfig(NVIC_PriorityGroup_0);
 		NVIC_InitStructure.NVIC_IRQChannel = CAN1_RX0_IRQn;;
-		NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 0x0;
+		NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 0x1;
 		NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0x0;
 		NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
 		NVIC_Init(&NVIC_InitStructure);
@@ -129,7 +129,7 @@ void can_init(CAN_TypeDef* CANx, unsigned int bps)
 		RCC_APB1PeriphClockCmd(RCC_APB1Periph_CAN2, ENABLE);
 		NVIC_PriorityGroupConfig(NVIC_PriorityGroup_0);
 		NVIC_InitStructure.NVIC_IRQChannel = CAN2_RX0_IRQn;;
-		NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 0x0;
+		NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 0x1;
 		NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0x0;
 		NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
 		NVIC_Init(&NVIC_InitStructure);
@@ -504,8 +504,12 @@ void show_timestampe(void)
 	global.timestamp[0].avg,global.timestamp[0].max);
 	rt_kprintf("can1 ==> min[%d] avg[%d] max[%d]\n", global.timestamp[1].min, 
 	global.timestamp[1].avg,global.timestamp[1].max);
-	rt_kprintf("save ==> min[%d] avg[%d] max[%d]\n", global.timestamp[2].min, 
+	rt_kprintf("save1 ==> min[%d] avg[%d] max[%d]\n", global.timestamp[2].min, 
 	global.timestamp[2].avg,global.timestamp[2].max);
+	rt_kprintf("save2 ==> min[%d] avg[%d] max[%d]\n", global.timestamp[3].min, 
+	global.timestamp[3].avg,global.timestamp[3].max);
+	rt_kprintf("save idle ==> min[%d] avg[%d] max[%d]\n", global.timestamp[4].min, 
+	global.timestamp[4].avg,global.timestamp[4].max);
 }
 FINSH_FUNCTION_EXPORT(show_timestampe, show  timestampe info.)
 #endif

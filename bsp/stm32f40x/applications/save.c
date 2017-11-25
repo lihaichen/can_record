@@ -3,6 +3,7 @@
 #include <dfs_posix.h>
 #include <time.h> 
 #include "common.h"
+#include "us.h"
 #include <drivers/pin.h>
 
 static int save(const char *file_name,const void *buf, size_t count)
@@ -51,11 +52,22 @@ void rt_file_thread_entry(void* parameter)
 			continue;
 		}
 #if USE_TIMESTAMPE	
-		global.timestamp[2].start = msg.timestamp;
+		if(global.timestamp[4].start == 0)
+		{
+			global.timestamp[4].start = get_us_timer();
+		}else
+		{
+			calc_timestampe(&global.timestamp[4]);
+			global.timestamp[4].start = get_us_timer();
+		}
+				
 #endif
 		switch(msg.type)
 		{
 			case CAN1_SAVE:
+#if USE_TIMESTAMPE	
+				global.timestamp[2].start = msg.timestamp;
+#endif
 				rt_pin_write(2,0);
 				rt_memset(buf,0,MEMPOLL_SIZE);
 				rt_memcpy(buf,msg.p,msg.value);
@@ -67,9 +79,15 @@ void rt_file_thread_entry(void* parameter)
 					global.file_len[0] = 0;
 					new_file(file_name[0],"/CH1");
 				}		
-				rt_pin_write(2,1);				
+				rt_pin_write(2,1);			
+#if USE_TIMESTAMPE	
+				calc_timestampe(&global.timestamp[2]);
+#endif				
 				break;
 			case CAN2_SAVE:
+#if USE_TIMESTAMPE	
+				global.timestamp[3].start = msg.timestamp;
+#endif				
 				rt_pin_write(4,0);
 				rt_memset(buf,0,MEMPOLL_SIZE);
 				rt_memcpy(buf,msg.p,msg.value);
@@ -81,13 +99,13 @@ void rt_file_thread_entry(void* parameter)
 					new_file(file_name[1],"/CH2");
 				}	
 				rt_pin_write(4,1);
+#if USE_TIMESTAMPE	
+				calc_timestampe(&global.timestamp[3]);
+#endif				
 				break;
 			default:
 				break;
 		}
-#if USE_TIMESTAMPE	
-		calc_timestampe(&global.timestamp[2]);
-#endif
 	}
 }
 int rt_file_init()
@@ -95,7 +113,7 @@ int rt_file_init()
 	rt_thread_t tid;
 	tid = rt_thread_create("file",
         rt_file_thread_entry, RT_NULL,
-        1024, 10, 20);  
+        1024, 10, 10);  
 	if (tid != RT_NULL)
 		rt_thread_startup(tid);
 	return 0;
