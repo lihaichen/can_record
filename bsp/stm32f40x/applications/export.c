@@ -13,7 +13,7 @@
 
 #define	BUF_SIZE 			 2048
 #define PAGE_SIZE 		 10
-#define FILE_PAGE_SIZE 10
+#define FILE_PAGE_SIZE 40
 // 支持的命令列表
 typedef enum 
 {
@@ -57,8 +57,9 @@ static int process_json(char* buf)
 	// 打印的长度
 	int print_len = 0;
 	static char tmp[FRAME_SIZE << 1];
-	static char readBuf1[FILE_PAGE_SIZE*FRAME_SIZE];
-	static int readBuf2[FILE_PAGE_SIZE*FRAME_SIZE];
+	// static char readBuf1[FILE_PAGE_SIZE*FRAME_SIZE];
+	// static int readBuf2[FILE_PAGE_SIZE*FRAME_SIZE];
+	static char fileReadBuf[FILE_PAGE_SIZE * FRAME_SIZE + FRAME_SIZE];
 	send_root = cJSON_CreateObject();
 	if (recv_root == RT_NULL)
 	{
@@ -252,6 +253,7 @@ static int process_json(char* buf)
 			break;
 		case READ_FIME:
 		{
+#if 0			
 			int page = 0, fd = -1, i = 0, readLen =0;
 			cJSON *recv_page = RT_NULL, *recv_file = RT_NULL, *send_list = RT_NULL;
 			const char *fileName = RT_NULL;
@@ -299,8 +301,64 @@ static int process_json(char* buf)
 			cJSON_AddItemToObject(send_body, "pageSize", cJSON_CreateNumber(FILE_PAGE_SIZE));
 			cJSON_AddItemToObject(send_body, "list", send_list);
 			cJSON_AddItemToObject(send_root, "status", cJSON_CreateNumber(200));
+#else
+			int page = 0, fd = -1, readLen =0;
+			cJSON *recv_page = RT_NULL, *recv_file = RT_NULL;
+			const char *fileName = RT_NULL;
+			// 获取页
+			recv_page = cJSON_GetObjectItemCaseSensitive(recv_body, "page");
+			// 获取文件
+			recv_file = cJSON_GetObjectItemCaseSensitive(recv_body, "file");
+			if (cJSON_IsNumber(recv_page))
+			{
+				page = recv_page->valueint;
+			}
+			if(page < 1)
+			{	
+				cJSON_AddItemToObject(send_root, "status", cJSON_CreateNumber(403));
+				goto RETURN;
+			}
+			if (cJSON_IsString(recv_file))
+			{
+				fileName = recv_file->valuestring;
+			}
+			if (!cJSON_IsString(recv_file) || rt_strlen(fileName) < 1)
+			{
+				cJSON_AddItemToObject(send_root, "status", cJSON_CreateNumber(403));
+				goto RETURN;
+			}
+			rt_memset(tmp,0,sizeof(tmp));
+			snprintf(tmp,sizeof(tmp)-1,"/%s",fileName);
+			fd = open(tmp,O_RDONLY,0);
+			if(fd < 0)
+			{
+				cJSON_AddItemToObject(send_root, "status", cJSON_CreateNumber(404));
+				goto RETURN;
+			}
+			lseek(fd, (page-1)*FILE_PAGE_SIZE*FRAME_SIZE,SEEK_SET);
+			rt_memset(fileReadBuf,0,sizeof(fileReadBuf));
+			strcpy(fileReadBuf,type_s[READ_FIME]);
+			readLen = read(fd,fileReadBuf + rt_strlen(type_s[READ_FIME]), FILE_PAGE_SIZE * FRAME_SIZE);
+			close(fd);
+			print_len = readLen + rt_strlen(type_s[READ_FIME]);
+			if(recv_root != RT_NULL)
+			{
+				cJSON_Delete(recv_root);
+			}
+			if(send_root != RT_NULL)
+			{
+				cJSON_Delete(send_root);
+			}
+			rt_memset(buf, 0, BUF_SIZE);
+			if(print_len >= BUF_SIZE)
+			{
+				print_len = BUF_SIZE - 1;
+				rt_kprintf("print_len >= BUF_SIZE\n");
+			}
+			rt_memcpy(buf, fileReadBuf, print_len);
+			return print_len;
+#endif			
 		}
-			break;
 		default:
 			break;
 	}
