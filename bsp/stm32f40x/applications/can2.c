@@ -46,7 +46,6 @@ static void rt_can2_thread_entry(void* parameter)
 				rt_pin_write(3,0);
 				can_msg = msg.p;
 				frame_to_bin(msg.type,can_msg, buf+len);
-				len += FRAME_SIZE;
 #if SERIAL_UPLOAD			
 				for(i = 0; i < global.id_len; i++)
 				{
@@ -56,13 +55,14 @@ static void rt_can2_thread_entry(void* parameter)
 						if(p != RT_NULL)
 						{
 							rt_memset(p,0,UART_FRAME_SIZE);
-							rt_memcpy(p,buf+len,UART_FRAME_SIZE);
+							rt_memcpy(p,buf+len,FRAME_SIZE);
 							rt_mq_send(global.uart_mq, (void *)&p, sizeof(char *));
 						}
 						break;
 					}
 				}
 #endif				
+				len += FRAME_SIZE;
 				if(len >= CAN_BUF_MAX_SIZE)
 				{
 					// 进行存储

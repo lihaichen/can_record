@@ -107,6 +107,7 @@ static int process_json(char* buf)
 				goto RETURN;
 			}
 			time = recv_body->valueint;
+			time += 8*60*60;
 			rt_device_control(device, RT_DEVICE_CTRL_RTC_SET_TIME, &time);
 			cJSON_AddItemToObject(send_root, "status", cJSON_CreateNumber(200));
 			cJSON_AddItemToObject(send_root, "body", cJSON_CreateObject());
@@ -359,7 +360,9 @@ static void rt_export_thread_entry(void* parameter)
 		len = recvfrom(fd, buf, sizeof(buf)-1, 0, (struct sockaddr*)&client_addr, &addr_len);
 		if(len > 0)
 		{
-			int send_len = process_json(buf);
+			int send_len = 0;
+			rt_kprintf("recv --->%s\n", buf);
+			send_len = process_json(buf);
 			if(send_len > 0)
 			{
 				sendto(fd, buf, send_len, 0, (struct sockaddr *)&client_addr, sizeof(client_addr));

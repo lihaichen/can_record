@@ -153,9 +153,9 @@
 #define RT_LWIP_ETHTHREAD_STACKSIZE		512
 
 /* TCP sender buffer space */
-#define RT_LWIP_TCP_SND_BUF	8192
+#define RT_LWIP_TCP_SND_BUF	(3*1024)
 /* TCP receive window. */
-#define RT_LWIP_TCP_WND		8192
+#define RT_LWIP_TCP_WND		(3*1024)
 
 #define CHECKSUM_CHECK_TCP              0
 #define CHECKSUM_CHECK_IP               0

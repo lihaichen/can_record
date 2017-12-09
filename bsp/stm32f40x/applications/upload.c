@@ -28,7 +28,14 @@ static void rt_upload_thread_entry(void* parameter)
 			rt_thread_delay(2);
 			continue;
 		}
-		rt_device_write(device,0,p,rt_strlen(p));
+		{
+			int i =0;
+			for(i =0; i < FRAME_SIZE; i++)
+			{
+				rt_kprintf("%02X ", p[i]);
+			}
+		}
+		rt_device_write(device, 0, p, FRAME_SIZE);
 		rt_mp_free(p);
 	}
 }
@@ -37,7 +44,7 @@ int rt_upload_init()
 {
 	 rt_thread_t tid;
 
-    tid = rt_thread_create("export",
+    tid = rt_thread_create("upload",
         rt_upload_thread_entry, RT_NULL,
         1024, 10, 20);
 

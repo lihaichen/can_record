@@ -33,7 +33,7 @@
 #define FILTER_ID_FILE		"/can_id"
 
 // 是否使用时间采样统计
-#define USE_TIMESTAMPE		1
+#define USE_TIMESTAMPE		0
 
 // 是否串口上报
 #define SERIAL_UPLOAD			1
