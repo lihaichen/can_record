@@ -82,15 +82,14 @@ void rt_init_thread_entry(void* parameter)
 			global.status = SD_ERROR;
     }
 #endif /* RT_USING_DFS && RT_USING_DFS_ELMFAT */
-#if 0		
 #if defined(RT_USING_LWIP)		
 		lwip_sys_init();
 		eth_system_device_init();
 		rt_hw_stm32_eth_init();
 		rt_export_init();
 #endif			
-#endif		
 		read_filter_id();
+		rt_kprintf("sizeof(save_msg_t)=%d\n",sizeof(save_msg_t));
 }
 
 int rt_application_init()

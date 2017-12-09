@@ -28,7 +28,7 @@ static void new_file(char *buf,const char *pre)
   struct tm *tm_p; 
 	timep = global.power_time + global.run_time;
 	tm_p =localtime(&timep);
-	sprintf(buf,"%s_%04d%02d%02d-%02d%02d%02d.csv",pre,
+	sprintf(buf,"%s_%04d%02d%02d%02d%02d%02d.bin",pre,
 					tm_p->tm_year + 1900,(1+tm_p->tm_mon), tm_p->tm_mday,
 					tm_p->tm_hour, tm_p->tm_min, tm_p->tm_sec);
 }

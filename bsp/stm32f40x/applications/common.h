@@ -6,20 +6,20 @@
 #include "stm32f4xx_can.h"
 
 // 不够64字节，补0,为扇区的整数倍
-#define FRAME_SIZE				64
+#define FRAME_SIZE				32
 
 // 串口帧大小
 #define UART_FRAME_SIZE  (FRAME_SIZE + 4)
 
-#define	CAN_BUF_MAX_SIZE	(21*1024)
+#define	CAN_BUF_MAX_SIZE	(8*1024)
 
 // 内存池的块大小
 #define	MEMPOLL_SIZE			(CAN_BUF_MAX_SIZE + (FRAME_SIZE * 2))
-#define MEMPOLL_COUNT			2
+#define MEMPOLL_COUNT			4
 #define	MQ_LEN						128
 
 // 文件最大大小
-#define	FILE_MAX_SIZE			25*1024*1024
+#define	FILE_MAX_SIZE			20*1024*1024
 
 // can默认速率
 #define	CAN_DEFAULT_BPS		(1000*1000)
@@ -34,6 +34,20 @@
 
 // 是否使用时间采样统计
 #define USE_TIMESTAMPE		1
+
+// 是否串口上报
+#define SERIAL_UPLOAD			1
+
+// 扩展帧
+#define EXTENDED_FRAME		(1<<1)
+// 标准帧
+#define STANDARD_FRASME		(0<<1)
+// 远程帧
+#define REMOTE_FRAME			(1<<0)
+// 数据帧
+#define DATE_FRAME				(0<<0)
+// 魔法数
+#define MAGIC_DTAA				(0xEE8855AA)
 
 // 运行状态机
 typedef enum 
@@ -69,6 +83,25 @@ typedef struct
 #endif
 	unsigned int reserve;
 }msg_t;
+
+// 保存msg结构体
+typedef struct 
+{
+	// 魔法值
+	unsigned int magic; 
+	// 数据长度
+	unsigned short len;
+	// 帧类型
+	unsigned short type;
+	// 时间秒数
+	unsigned long long date;
+	// can id
+	unsigned int id;
+	// us 
+	unsigned int us;
+	// 数据信息
+	unsigned char data[8];
+}save_msg_t;
 
 typedef struct 
 {
@@ -137,7 +170,8 @@ extern char * send_save_msg(msg_type_t type,void *buf,int len,int timestamp);
 
 // 将can数据解析存储buf，格式为csv
 extern int frame_to_csv(msg_type_t type, CanRxMsg *can_msg, char* buf);
-
+// 将can数据解析存储buf，格式为bin
+extern int frame_to_bin(msg_type_t type, CanRxMsg *can_msg, char* buf);
 extern void can_init(CAN_TypeDef* CANx, unsigned int bps);
 extern void can_filter_init(unsigned int num, FunctionalState NewState);
 // 存储线程初始化

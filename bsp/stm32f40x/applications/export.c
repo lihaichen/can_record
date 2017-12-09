@@ -13,7 +13,7 @@
 
 #define	BUF_SIZE 			 2048
 #define PAGE_SIZE 		 10
-#define FILE_PAGE_SIZE 18
+#define FILE_PAGE_SIZE 10
 // 支持的命令列表
 typedef enum 
 {
@@ -57,6 +57,8 @@ static int process_json(char* buf)
 	// 打印的长度
 	int print_len = 0;
 	static char tmp[FRAME_SIZE << 1];
+	static char readBuf1[FILE_PAGE_SIZE*FRAME_SIZE];
+	static int readBuf2[FILE_PAGE_SIZE*FRAME_SIZE];
 	send_root = cJSON_CreateObject();
 	if (recv_root == RT_NULL)
 	{
@@ -217,11 +219,12 @@ static int process_json(char* buf)
 			{
 				if(ptr->d_type == DFS_DT_REG)
 				{
-					int ch = 0, time =0;
+					int ch = -1, time = -1;
 					rt_memset(tmp,0,sizeof(tmp));
-					sscanf(ptr->d_name,"CH%d_%d.csv",&ch, &time);
-					if(ch == 1 || time == 0)
+					sscanf(ptr->d_name,"CH%d_%d.bin",&ch, &time);
+					if(ch == -1 || time == -1)
 					{
+						rt_kprintf("invalid file %s\n", ptr->d_name);
 						continue;
 					}
 					if((sum >= (page -1)* PAGE_SIZE) && (sum < page * PAGE_SIZE))
@@ -248,7 +251,7 @@ static int process_json(char* buf)
 			break;
 		case READ_FIME:
 		{
-			int page = 0, fd = -1, i = 0;
+			int page = 0, fd = -1, i = 0, readLen =0;
 			cJSON *recv_page = RT_NULL, *recv_file = RT_NULL, *send_list = RT_NULL;
 			const char *fileName = RT_NULL;
 			recv_page = cJSON_GetObjectItemCaseSensitive(recv_body, "page");
@@ -281,16 +284,15 @@ static int process_json(char* buf)
 				cJSON_AddItemToObject(send_root, "status", cJSON_CreateNumber(404));
 				goto RETURN;
 			}
-			send_list = cJSON_CreateArray();
 			lseek(fd, (page-1)*FILE_PAGE_SIZE*FRAME_SIZE,SEEK_SET);
-			for(i = 0; i < FILE_PAGE_SIZE; i++)
+			rt_memset(readBuf1,0,sizeof(readBuf1));
+			rt_memset(readBuf2,0,sizeof(readBuf2));
+			readLen = read(fd,readBuf1,sizeof(readBuf1));
+			for(i =0; i < readLen; i++)
 			{
-				rt_memset(tmp,0,sizeof(tmp));
-				if(read(fd,tmp,FRAME_SIZE) == FRAME_SIZE)
-				{
-					cJSON_AddItemToArray(send_list, cJSON_CreateString(tmp));
-				}
+				readBuf2[i] = readBuf1[i];
 			}
+			send_list = cJSON_CreateIntArray(readBuf2, readLen);
 			close(fd);
 			cJSON_AddItemToObject(send_body, "page", cJSON_CreateNumber(page));
 			cJSON_AddItemToObject(send_body, "pageSize", cJSON_CreateNumber(FILE_PAGE_SIZE));
