@@ -119,6 +119,7 @@ static int rtcConfiguration(struct rt_i2c_bus_device * i2c_device)
 	{
 		return RT_ERROR;
 	}
+	rt_kprintf("config rtc 0x09 value[%d]\n",data);
 	if(data & 1<< 7)
 	{
 		unsigned char buf[7];

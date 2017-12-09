@@ -360,9 +360,7 @@ static void rt_export_thread_entry(void* parameter)
 		len = recvfrom(fd, buf, sizeof(buf)-1, 0, (struct sockaddr*)&client_addr, &addr_len);
 		if(len > 0)
 		{
-			int send_len = 0;
-			rt_kprintf("recv --->%s\n", buf);
-			send_len = process_json(buf);
+			int send_len = process_json(buf);
 			if(send_len > 0)
 			{
 				sendto(fd, buf, send_len, 0, (struct sockaddr *)&client_addr, sizeof(client_addr));
@@ -376,7 +374,7 @@ int rt_export_init()
 
     tid = rt_thread_create("export",
         rt_export_thread_entry, RT_NULL,
-        1024, 10, 20);
+        2048, 10, 20);
 
     if (tid != RT_NULL)
         rt_thread_startup(tid);
