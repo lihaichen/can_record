@@ -26,6 +26,7 @@ static void rt_can2_thread_entry(void* parameter)
 	{		
 		if(rt_mq_recv(global.can2_mq, &msg,sizeof(msg_t),  IDLE_SAVE) != RT_EOK)
 		{
+			rt_pin_write(3,1);
 			if(len > 0)
 			{
 				buf = send_save_msg(CAN2_SAVE,buf,len,get_us_timer());
@@ -69,7 +70,7 @@ static void rt_can2_thread_entry(void* parameter)
 					buf = send_save_msg(CAN2_SAVE,buf,len,get_us_timer());
 					len = 0;
 				}	
-				rt_pin_write(3,1);
+				// rt_pin_write(3,1);
 #if USE_TIMESTAMPE		
 				global.timestamp[1].start = msg.timestamp;
 				calc_timestampe(&global.timestamp[1]);

@@ -25,7 +25,7 @@
 #define	CAN_DEFAULT_BPS		(1000*1000)
 
 // can 空闲时间进行存储
-#define IDLE_SAVE					RT_TICK_PER_SECOND/2
+#define IDLE_SAVE					RT_TICK_PER_SECOND/4
 
 // 不够64字节是否填充
 #define CAN_FILL					1
