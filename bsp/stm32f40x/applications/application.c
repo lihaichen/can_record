@@ -46,6 +46,7 @@ void rt_init_thread_entry(void* parameter)
 {
 		extern void lwip_sys_init(void);
 		global.status = INIT;
+		rt_thread_delay(RT_TICK_PER_SECOND);
 		i2c_init();
 #ifdef RT_USING_RTC
 		DS1340Init("rtc","i2c");

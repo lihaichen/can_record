@@ -28,13 +28,6 @@ static void rt_upload_thread_entry(void* parameter)
 			rt_thread_delay(2);
 			continue;
 		}
-		{
-			int i =0;
-			for(i =0; i < FRAME_SIZE; i++)
-			{
-				rt_kprintf("%02X ", p[i]);
-			}
-		}
 		rt_device_write(device, 0, p, FRAME_SIZE);
 		rt_mp_free(p);
 	}

@@ -117,9 +117,10 @@ static int rtcConfiguration(struct rt_i2c_bus_device * i2c_device)
 	err = readDS1340(i2c_device,0x09,&data,1);
 	if(err != 0)
 	{
+		rt_kprintf("rtc read ds1340 error\n");
 		return RT_ERROR;
 	}
-	rt_kprintf("config rtc 0x09 value[%d]\n",data);
+	rt_kprintf("rtc read reg[0x09] value[%d]\n",data);
 	if(data & 1<< 7)
 	{
 		unsigned char buf[7];
